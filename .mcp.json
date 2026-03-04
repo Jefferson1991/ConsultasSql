@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "hana-mcp-server-hana-empaqplast": {
+      "command": "hana-mcp-server",
+      "type": "stdio",
+      "env": {
+        "HANA_HOST": "erp.empaqplast.com",
+        "HANA_PORT": "30015",
+        "HANA_USER": "empaqplast",
+        "HANA_PASSWORD": "Empaq2024.#!$%",
+        "HANA_SCHEMA": "EMPAQPLAST_PROD",
+        "HANA_SSL": "false",
+        "HANA_ENCRYPT": "false",
+        "HANA_VALIDATE_CERT": "false",
+        "HANA_CONNECTION_TYPE": "auto",
+        "LOG_LEVEL": "info",
+        "ENABLE_FILE_LOGGING": "true",
+        "ENABLE_CONSOLE_LOGGING": "false"
+      }
+    }
+  }
+}
