@@ -150,7 +150,6 @@ CalculosFinales AS (
         ROUND((IFNULL(("Consumo_90_dias" / 3.0) / 30.0, 0) * IFNULL("LeadTime", 0)) + IFNULL("MinLevel", 0), 2) AS "PR_Cantidad"
     FROM StockBase
 )
-
 SELECT
     "Codigo",
     "Codigo_Secundario",

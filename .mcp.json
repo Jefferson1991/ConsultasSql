@@ -17,6 +17,50 @@
         "ENABLE_FILE_LOGGING": "true",
         "ENABLE_CONSOLE_LOGGING": "false"
       }
-    }
+    },
+     "sqlserver-onlycontrol": {
+            "command": "C:\\Users\\Jefferson Vásconez\\AppData\\Roaming\\npm\\mcp-sqlserver.cmd",
+            "env": {
+                "SQLSERVER_HOST": "SRV-BIOM-001\\SQLEXPRESS2008R2",
+                "SQLSERVER_USER": "ocaccess",
+                "SQLSERVER_PASSWORD": "oc1976",
+                "SQLSERVER_DATABASE": "ONLYCONTROL",
+                "SQLSERVER_ENCRYPT": "false",
+                "SQLSERVER_TRUST_CERT": "false"
+            }
+        },
+        "sqlserver-timecontrol": {
+            "command": "C:\\Users\\Jefferson Vásconez\\AppData\\Roaming\\npm\\mcp-sqlserver.cmd",
+            "env": {
+                "SQLSERVER_HOST": "SRV-BIOM-001\\SQLEXPRESS2008R2",
+                "SQLSERVER_USER": "ocaccess",
+                "SQLSERVER_PASSWORD": "oc1976",
+                "SQLSERVER_DATABASE": "TCONTROL",
+                "SQLSERVER_ENCRYPT": "false",
+                "SQLSERVER_TRUST_CERT": "false"
+            }
+        },
+        "sqlserver-etl-local-th": {
+            "command": "C:\\Users\\Jefferson Vásconez\\AppData\\Roaming\\npm\\mcp-sqlserver.cmd",
+            "env": {
+                "SQLSERVER_HOST": "192.168.20.15",
+                "SQLSERVER_USER": "sa",
+                "SQLSERVER_PASSWORD": "Empaqplastssql.!",
+                "SQLSERVER_DATABASE": "TH",
+                "SQLSERVER_ENCRYPT": "false",
+                "SQLSERVER_TRUST_CERT": "false"
+            }
+        },
+        "sqlserver-etl-local-dispensarioMedico": {
+            "command": "C:\\Users\\Jefferson Vásconez\\AppData\\Roaming\\npm\\mcp-sqlserver.cmd",
+            "env": {
+                "SQLSERVER_HOST": "192.168.20.15",
+                "SQLSERVER_USER": "sa",
+                "SQLSERVER_PASSWORD": "Empaqplastssql.!",
+                "SQLSERVER_DATABASE": "dispensarioMedico",
+                "SQLSERVER_ENCRYPT": "false",
+                "SQLSERVER_TRUST_CERT": "false"
+            }
+        }
   }
 }
