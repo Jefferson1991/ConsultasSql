@@ -27,6 +27,20 @@ SELECT
     -- Planificacion del turno
     S.fechaRegistroSLPC                 AS Semana_Planificada,
     REPLACE(S.horarioSLPC, ' ', '')     AS Turno_Planificado,
+
+    -- Tipo de horario segun cuadro de manejo de horarios
+    CASE REPLACE(S.horarioSLPC, ' ', '')
+        WHEN '06:00/18:00'              THEN 'ROTATIVO DIURNO'        -- 4 dias 06-18, 2 libres (Prueba Rotativo 3 / GYE / Molino)
+        WHEN '18:00/06:00'              THEN 'ROTATIVO NOCTURNO'      -- 4 dias 18-06, 2 libres
+        WHEN '18:00/06:00-06:00/18:00'  THEN 'ROTATIVO COMPLETO'      -- Registro combinado de ambos turnos rotativos
+        WHEN '06:00/14:00'              THEN 'PROD-MANANA'            -- 8h logistica/taller moldes/mantenimiento
+        WHEN '14:00/00:00'              THEN 'PROD-TARDE'             -- 8h (14:00-22:00)
+        WHEN '22:00/06:00'              THEN 'PROD-VELADA'            -- 8h velada
+        WHEN '06:00/08:00'              THEN 'PARCIAL'                -- 2h turno parcial
+        WHEN '06:00/06:00'             THEN 'TURNO-24H'              -- Cobertura completa 24h
+        ELSE 'OTRO: ' + REPLACE(S.horarioSLPC, ' ', '')
+    END                                 AS Tipo_Horario,
+
     S.maquinaSLPC                       AS Maquina_Planificada,
     S.actividadSLPC                     AS Actividad_Planificada,
 
@@ -45,23 +59,33 @@ SELECT
         DATEPART(minute, A.Horas_Laboradas) / 60.0
     AS DECIMAL(5,2))                    AS Horas_Trabajadas_Decimal,
 
-    -- Horas planificadas segun turno (12h turno diurno/nocturno estandar)
-    CASE
-        WHEN REPLACE(S.horarioSLPC,' ','') IN ('06:00/18:00','18:00/06:00') THEN 12.00
-        WHEN REPLACE(S.horarioSLPC,' ','') = '06:00/14:00'                  THEN  8.00
-        WHEN REPLACE(S.horarioSLPC,' ','') = '14:00/00:00'                  THEN  8.00
-        WHEN REPLACE(S.horarioSLPC,' ','') = '22:00/06:00'                  THEN  8.00
+    -- Horas planificadas segun cuadro de manejo de horarios
+    CASE REPLACE(S.horarioSLPC, ' ', '')
+        WHEN '06:00/18:00'              THEN 12.00   -- Rotativo diurno / Molino / GYE
+        WHEN '18:00/06:00'              THEN 12.00   -- Rotativo nocturno / GYE
+        WHEN '18:00/06:00-06:00/18:00'  THEN 12.00   -- Rotativo completo (ambos turnos en registro)
+        WHEN '06:00/06:00'              THEN 24.00   -- Cobertura 24h
+        WHEN '06:00/14:00'              THEN  8.00   -- PROD-MANANA
+        WHEN '14:00/00:00'              THEN  8.00   -- PROD-TARDE (14:00-22:00)
+        WHEN '22:00/06:00'              THEN  8.00   -- PROD-VELADA
+        WHEN '06:00/08:00'              THEN  2.00   -- Turno parcial
         ELSE NULL
     END                                 AS Horas_Planificadas,
 
-    -- Diferencia horas trabajadas vs planificadas
+    -- Diferencia: horas reales trabajadas menos horas planificadas
     CAST(
         DATEPART(hour,   A.Horas_Laboradas) +
         DATEPART(minute, A.Horas_Laboradas) / 60.0
     AS DECIMAL(5,2)) -
-    CASE
-        WHEN REPLACE(S.horarioSLPC,' ','') IN ('06:00/18:00','18:00/06:00') THEN 12.00
-        WHEN REPLACE(S.horarioSLPC,' ','') IN ('06:00/14:00','14:00/00:00','22:00/06:00') THEN 8.00
+    CASE REPLACE(S.horarioSLPC, ' ', '')
+        WHEN '06:00/18:00'              THEN 12.00
+        WHEN '18:00/06:00'              THEN 12.00
+        WHEN '18:00/06:00-06:00/18:00'  THEN 12.00
+        WHEN '06:00/06:00'              THEN 24.00
+        WHEN '06:00/14:00'              THEN  8.00
+        WHEN '14:00/00:00'              THEN  8.00
+        WHEN '22:00/06:00'              THEN  8.00
+        WHEN '06:00/08:00'              THEN  2.00
         ELSE NULL
     END                                 AS Diferencia_Horas,
 
