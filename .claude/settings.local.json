@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "mcp__sqlserver-etl-local-th__execute_query",
-      "mcp__sqlserver-etl-local-th__test_connection"
-    ]
-  }
-}
