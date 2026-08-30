@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "mssql": {
+      "source": "sanjay3290/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/mssql/SKILL.md",
+      "computedHash": "f50393d205a789ac1dbbf7a7ca0a4cb2f53b63fcb3108d8b86a89eee5e39bb1d"
+    },
+    "sap-sqlscript": {
+      "source": "secondsky/sap-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/sap-sqlscript/skills/sap-sqlscript/SKILL.md",
+      "computedHash": "7f0e002eb32199118f9fc1ac281f254b31e6fc4dbc14454bfa1e4a579c7f5d5c"
+    },
+    "supabase-postgres-best-practices": {
+      "source": "supabase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
+      "computedHash": "128fac78002d916c8ca908245d398e634f540d8bcf20915b2b2359aeb18eba59"
+    }
+  }
+}

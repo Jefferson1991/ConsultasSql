@@ -332,24 +332,40 @@
     <section id="skills">
       <h2><span class="dot" style="background:var(--rose)"></span> Agent Skills (.agents)</h2>
       <div class="skill-box">
-        <h3>consultas-sql-empaqplast</h3>
-        <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:.5rem">Skill principal para escribir, revisar y desplegar consultas. Incluye convenciones HANA, OPENQUERY, flujo de alertas y checklist de verificación.</p>
-        <code>~/.agents/skills/consultas-sql-empaqplast/SKILL.md</code>
+        <h3>Skills por base de datos (.agents/skills/)</h3>
+        <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:.75rem">Activar el skill del motor antes de escribir SQL.</p>
       </div>
       <div class="cards">
         <div class="card">
-          <div class="card-title">referencias/sap-b1-hana.md</div>
-          <div class="card-desc">Tablas B1 por dominio, UDFs Empaqplast, vistas SB1_VIEW_* existentes, Transaction Notifications.</div>
+          <div class="card-title">consultas-sql-empaqplast</div>
+          <div class="card-desc">Orquestador: organización repo, alertas OPENQUERY, checklist general.</div>
         </div>
         <div class="card">
-          <div class="card-title">referencias/sqlserver-patrones.md</div>
-          <div class="card-desc">TimeControl, OnlyControl, AlertasB1 OPENQUERY, Power BI, ETL incremental, Python+sqlcmd.</div>
+          <div class="card-title">sap-b1-hana-sql</div>
+          <div class="card-desc">SAP B1 HANA: columnas B1, vistas SB1_VIEW_*, Transaction Notifications, tuning column store.</div>
         </div>
         <div class="card">
-          <div class="card-title">referencias/flujo-trabajo.md</div>
-          <div class="card-desc">Organización del repo, cadena de alertas, decisión de motor, scripts pendientes de migrar.</div>
+          <div class="card-title">sqlserver-tsql-empaqplast</div>
+          <div class="card-desc">T-SQL: TimeControl, OPENQUERY AlertasB1, vm_atrasos, Power BI, SET NOCOUNT, Query Store.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">postgres-sql-empaqplast</div>
+          <div class="card-desc">PostgreSQL: snake_case, schemas, permisos, auth app, NPS, seguridad search_path.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">supabase-postgres-best-practices</div>
+          <div class="card-desc">Registry skills.sh: índices, RLS, EXPLAIN, paginación, locks (complementa el skill Empaqplast).</div>
+        </div>
+        <div class="card">
+          <div class="card-title">mssql</div>
+          <div class="card-desc">Registry skills.sh: consultas read-only T-SQL con validación de seguridad.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">sap-sqlscript</div>
+          <div class="card-desc">Registry skills.sh: procedimientos, funciones y SQLScript en HANA.</div>
         </div>
       </div>
+      <p style="font-size:.82rem;color:var(--text-muted);margin-top:1rem">Restaurar registry: <code>npx skills experimental_install</code> · Buscar más: <code>npx skills find postgres</code></p>
     </section>
 
     <div class="empty" id="no-results" style="display:none">Sin resultados para la búsqueda actual.</div>

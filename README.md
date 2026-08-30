@@ -71,8 +71,23 @@ de su BDD origen en subcarpetas temáticas (`ordenes-compra/`, `pricing/`,
 - **Python:** `sqlcmd` para base de datos.
 - Verificar esquema en vivo antes de escribir consultas.
 
-## Catálogo
+## Catálogo y Agent Skills
 
 Guía interactiva: `catalogo-consultas/guia-consultas.html`
 
-Agent Skill: `~/.agents/skills/consultas-sql-empaqplast/`
+Skills del proyecto en `.agents/skills/` (Cursor los carga automáticamente).
+Registry externo fijado en `skills-lock.json`; restaurar con
+`npx skills experimental_install`.
+
+| Skill | Origen | Motor |
+|-------|--------|-------|
+| `consultas-sql-empaqplast` | local | Orquestador del repo |
+| `sap-b1-hana-sql` | local | SAP B1 / HANA |
+| `sqlserver-tsql-empaqplast` | local | SQL Server (Empaqplast) |
+| `postgres-sql-empaqplast` | local | PostgreSQL (Empaqplast) |
+| `supabase-postgres-best-practices` | [skills.sh](https://skills.sh/supabase/agent-skills/supabase-postgres-best-practices) | PostgreSQL (general) |
+| `mssql` | [skills.sh](https://skills.sh/sanjay3290/ai-skills/mssql) | SQL Server (consultas read-only) |
+| `sap-sqlscript` | [skills.sh](https://skills.sh/secondsky/sap-skills/sap-sqlscript) | HANA SQLScript / SP |
+
+Instalar más skills: `npx skills find postgres` o `npx skills add owner/repo --skill nombre -a cursor -y`.
+`npx autoskills` en este repo solo detecta frontend (por `guia-consultas.html`); usar `skills add` para SQL.
