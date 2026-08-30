@@ -1,8 +1,8 @@
-ALTER VIEW SB1_VIEW_REPORTE_ENTRADA_MERCANCIAS_OT AS 
+﻿ALTER VIEW SB1_VIEW_REPORTE_ENTRADA_MERCANCIAS_OT AS 
 
 SELECT 
     -- Fechas separadas (compatibles con HANA)
-    YEAR(T0."DocDate")                 AS "Año",
+    YEAR(T0."DocDate")                 AS "A├▒o",
     MONTH(T0."DocDate")                AS "Mes",
     DAYOFMONTH(T0."DocDate")           AS "Dia",
     -- Orden y fechas
@@ -10,7 +10,7 @@ SELECT
     T1."U_beas_belnrid"                AS "OrdenProd",
     T0."DocNum" 					   AS "Documento_Entrada_Mercancias", 
     T2."DocDate" 					   AS "Fecha del movimiento",
-    -- Artículo
+    -- Art├¡culo
     T1."ItemCode"                      AS "ItemProduccion",
     T4."ItemName"                      AS "DescItemProd",
     
@@ -26,7 +26,7 @@ SELECT
     T2."CalcPrice" * T2."InQty"        AS "Valor_transaccion",
     (T4."IWeight1" / 1000) * T1."Quantity" AS "Peso_Kilogramos",
 
-    -- Organización y clasificación
+    -- Organizaci├│n y clasificaci├│n
     T1."OcrCode"                       AS "Sucursal",
     T1."OcrCode2"                      AS "Area",
     T1."OcrCode3"                      AS "Departamento",

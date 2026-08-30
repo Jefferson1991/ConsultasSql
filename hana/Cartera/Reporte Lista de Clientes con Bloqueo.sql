@@ -1,4 +1,4 @@
-SELECT
+﻿SELECT
     T1."CardCode",
     T1."CardName",
     T1."AvrageLate"                          AS excedente_dias,

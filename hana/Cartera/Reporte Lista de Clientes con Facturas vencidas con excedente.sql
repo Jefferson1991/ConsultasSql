@@ -1,4 +1,4 @@
-SELECT
+﻿SELECT
     T1."CardCode",
     T1."CardName",
     DAYS_BETWEEN(T0."DocDate", T0."DocDueDate")  AS dias_credito,

@@ -1,12 +1,12 @@
--- =============================================================================
--- SAP B1 sobre HANA - Vistas SB1_VIEW con clasificación por Área
+﻿-- =============================================================================
+-- SAP B1 sobre HANA - Vistas SB1_VIEW con clasificaci├│n por ├ürea
 -- Esquema: EMPAQPLAST_PROD
 -- Desde: 2023-03-01
--- Clasificación basada en las TABLAS BASE que usa cada vista (OBJECT_DEPENDENCIES)
+-- Clasificaci├│n basada en las TABLAS BASE que usa cada vista (OBJECT_DEPENDENCIES)
 -- =============================================================================
 
 -- =============================================================================
--- RESUMEN: CANTIDAD DE VISTAS POR ÁREA (basado en tablas que usa la vista)
+-- RESUMEN: CANTIDAD DE VISTAS POR ├üREA (basado en tablas que usa la vista)
 -- =============================================================================
 SELECT
     "Area",
@@ -61,7 +61,7 @@ FROM (
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OBTW%'
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OWHS%'
                  THEN 'Inventario'
-            -- Finanzas / Tesorería (OACT, OJDT, OBNK, OVPM, ORCT)
+            -- Finanzas / Tesorer├¡a (OACT, OJDT, OBNK, OVPM, ORCT)
             WHEN STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OACT%'
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OJDT%'
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%JDT1%'
@@ -70,15 +70,15 @@ FROM (
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%VPM1%'
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%ORCT%'
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%RCT1%'
-                 THEN 'Finanzas / Tesorería'
+                 THEN 'Finanzas / Tesorer├¡a'
             -- Proyectos (OPRJ, OPMG)
             WHEN STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OPRJ%'
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OPMG%'
                  THEN 'Proyectos'
-            -- Producción SBO estándar (OWOR)
+            -- Producci├│n SBO est├índar (OWOR)
             WHEN STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OWOR%'
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%WOR1%'
-                 THEN 'Producción SBO'
+                 THEN 'Producci├│n SBO'
             -- Socios de Negocio (OCRD)
             WHEN STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OCRD%'
               OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%CRD1%'
@@ -100,7 +100,7 @@ ORDER BY "Cantidad" DESC;
 
 
 -- =============================================================================
--- DETALLE: LISTADO DE VISTAS SB1_VIEW CON TABLAS BASE Y ÁREA
+-- DETALLE: LISTADO DE VISTAS SB1_VIEW CON TABLAS BASE Y ├üREA
 -- =============================================================================
 ALTER VIEW fact_vistas_bdd AS 
 SELECT
@@ -154,7 +154,7 @@ SELECT
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OBTW%'
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OWHS%'
              THEN 'Inventario'
-        -- Finanzas / Tesorería (OACT, OJDT, OBNK, OVPM, ORCT)
+        -- Finanzas / Tesorer├¡a (OACT, OJDT, OBNK, OVPM, ORCT)
         WHEN STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OACT%'
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OJDT%'
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%JDT1%'
@@ -163,15 +163,15 @@ SELECT
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%VPM1%'
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%ORCT%'
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%RCT1%'
-             THEN 'Finanzas / Tesorería'
+             THEN 'Finanzas / Tesorer├¡a'
         -- Proyectos (OPRJ, OPMG)
         WHEN STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OPRJ%'
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OPMG%'
              THEN 'Proyectos'
-        -- Producción SBO estándar (OWOR)
+        -- Producci├│n SBO est├índar (OWOR)
         WHEN STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OWOR%'
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%WOR1%'
-             THEN 'Producción SBO'
+             THEN 'Producci├│n SBO'
         -- Socios de Negocio (OCRD)
         WHEN STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%OCRD%'
           OR STRING_AGG(D.BASE_OBJECT_NAME, ',') LIKE '%CRD1%'
@@ -191,8 +191,8 @@ ORDER BY V.CREATE_TIME DESC;
 
 
 -- =============================================================================
--- DETALLE POR ÁREA ESPECÍFICA (ejemplo: BEAS Manufacturing)
--- Cambiar el filtro en el HAVING para ver otras áreas
+-- DETALLE POR ├üREA ESPEC├ìFICA (ejemplo: BEAS Manufacturing)
+-- Cambiar el filtro en el HAVING para ver otras ├íreas
 -- =============================================================================
 SELECT
     V.VIEW_NAME                                                         AS "NombreVista",

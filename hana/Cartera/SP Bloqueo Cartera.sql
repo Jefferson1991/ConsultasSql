@@ -1,12 +1,12 @@
--- ============================================================
+﻿-- ============================================================
 -- Objeto 17 = ORDR | Evento A = Add
--- DocDueDate ya incluye el crédito (GroupNum, ej. 90 DIAS)
--- AvrageLate (SMALLINT)   = excedente en días | OCRD estándar
+-- DocDueDate ya incluye el cr├®dito (GroupNum, ej. 90 DIAS)
+-- AvrageLate (SMALLINT)   = excedente en d├¡as | OCRD est├índar
 -- U_EMPA_BLOQ_CARTER (NVARCHAR 1) = check de bloqueo, 'Y'/'N'
 -- Exige saldo real pendiente: (DocTotal - PaidToDate) > 0
 --id error		:		-226
 --nombre		:		Bloqueo de PEDIDOS por cartera vencida + excedente
---autor			:		JEFFERSON VÁSCONEZ
+--autor			:		JEFFERSON V├üSCONEZ
 --creado el		:		19-06-2026
 --modificado por:		
 --modificado el:	
@@ -34,7 +34,7 @@
 
       IF :v_Bloqueo = 'Y' THEN
 
-         -- Resumen: cuántas facturas vencidas y saldo total vencido
+         -- Resumen: cu├íntas facturas vencidas y saldo total vencido
          SELECT COUNT(*),
                 IFNULL(SUM(T0."DocTotal" - T0."PaidToDate"), 0)
            INTO v_Vencidas, v_Saldo
@@ -46,7 +46,7 @@
 
          IF :v_Vencidas > 0 THEN
 
-            -- Factura más antigua: número y días de vencimiento
+            -- Factura m├ís antigua: n├║mero y d├¡as de vencimiento
             SELECT TOP 1
                    T0."DocNum",
                    DAYS_BETWEEN(ADD_DAYS(T0."DocDueDate", :v_Exced), CURRENT_DATE)

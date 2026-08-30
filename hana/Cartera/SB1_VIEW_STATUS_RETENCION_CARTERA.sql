@@ -1,8 +1,8 @@
-/* =========================================================================
+﻿/* =========================================================================
    SB1_VIEW_STATUS_RETENCION_CARTERA
    Esquema: EMPAQPLAST_PROD   |   Motor: SAP HANA 2.00.087
 
-   La función EMPAQPLAST::STATUSRETENCION responde bien. La vista quedó
+   La funci├│n EMPAQPLAST::STATUSRETENCION responde bien. La vista qued├│
    invalidada (error 391). HANA no tiene RECOMPILE: se recrea con el
    mismo SELECT que ya corre en DBeaver.
    ========================================================================= */

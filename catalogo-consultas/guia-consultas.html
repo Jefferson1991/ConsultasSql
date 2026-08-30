@@ -240,12 +240,12 @@
       <div class="nav-label">Navegación</div>
       <button class="nav-btn active" data-section="inicio">Inicio</button>
       <button class="nav-btn" data-section="arquitectura">Arquitectura</button>
-      <button class="nav-btn" data-section="pedidos">Pedidos activos</button>
+      <button class="nav-btn" data-section="pedidos">Alertas</button>
       <button class="nav-btn" data-section="hana">SAP B1 / HANA</button>
       <button class="nav-btn" data-section="sqlserver">SQL Server</button>
       <button class="nav-btn" data-section="postgres">PostgreSQL</button>
       <button class="nav-btn" data-section="python">Automatización</button>
-      <button class="nav-btn" data-section="carpetas">Por carpeta</button>
+      <button class="nav-btn" data-section="carpetas">Por BDD</button>
       <button class="nav-btn" data-section="skills">Agent Skills</button>
     </div>
     <div class="nav-group">
@@ -259,7 +259,7 @@
   <main>
     <section id="inicio">
       <h1>Catálogo de Consultas SQL</h1>
-      <p class="lead">Inventario estratégico de consultas, vistas y automatizaciones sobre SAP B1 (HANA), SQL Server, PostgreSQL y Python. Organizado por sistema → dominio → tipo.</p>
+      <p class="lead">Inventario de consultas organizado por base de datos: HANA, SQL Server, PostgreSQL y automatizaciones Python.</p>
 
       <div class="stats" id="stats"></div>
 
@@ -273,8 +273,7 @@
       </div>
 
       <div class="callout">
-        <strong>Organización:</strong> cada pedido vive en su carpeta kebab-case en la raíz del repo.
-        <strong>28 carpetas</strong>, sin scripts sueltos ni carpeta <code>Scripts/</code>.
+        <strong>6 carpetas raíz por BDD:</strong> <code>hana/</code> · <code>sqlserver/</code> · <code>postgres/</code> · <code>automatizaciones/</code> · <code>fracttal/</code> · <code>catalogo-consultas/</code>
       </div>
     </section>
 
@@ -301,7 +300,7 @@
     </section>
 
     <section id="pedidos">
-      <h2><span class="dot" style="background:var(--green)"></span> Pedidos activos (carpetas raíz)</h2>
+      <h2><span class="dot" style="background:var(--green)"></span> Alertas (multi-BDD)</h2>
       <div class="cards" id="cards-pedidos"></div>
     </section>
 
@@ -326,7 +325,7 @@
     </section>
 
     <section id="carpetas">
-      <h2><span class="dot" style="background:var(--amber)"></span> Índice por carpeta</h2>
+      <h2><span class="dot" style="background:var(--amber)"></span> Índice por base de datos</h2>
       <div class="cards" id="cards-carpetas"></div>
     </section>
 
@@ -359,98 +358,68 @@
 
 <script>
 const CATALOG = [
-  // ── Alertas y pedidos principales ──
-  { section:'pedidos', sys:'hana', domain:'Compras', tags:['vista','alerta','hana'], title:'SB1_VIEW_ORDENES_COMPRA', path:'ordenes-compra-sap-b1/SB1_VIEW_ORDENES_COMPRA.sql', desc:'OC abiertas serie OCNAC.' },
-  { section:'pedidos', sys:'sqlserver', domain:'Compras', tags:['alerta','sqlserver'], title:'ORDENES_COMPRA (AlertasB1)', path:'ordenes-compra-sap-b1/AlertasB1_ORDENES_COMPRA_linked_server.sql', desc:'Vista puente OPENQUERY HANAODBC.' },
-  { section:'pedidos', sys:'python', domain:'Compras', tags:['alerta','python'], title:'NotificacionOrdenesCompra.py', path:'ordenes-compra-sap-b1/NotificacionOrdenesCompra.py', desc:'Alerta correo sqlcmd → xlsx → SMTP.' },
-  { section:'pedidos', sys:'hana', domain:'Logística', tags:['reporte','hana'], title:'Traslado vs Salida', path:'traslado-vs-salida-mercancia/traslado_vs_salida_promedio_ponderado.sql', desc:'Promedio ponderado y asiento contable.' },
-  { section:'pedidos', sys:'hana', domain:'Cartera', tags:['vista','hana'], title:'SB1_VIEW_STATUS_RETENCION_CARTERA', path:'status-retencion-cartera/SB1_VIEW_STATUS_RETENCION_CARTERA.sql', desc:'Retenciones EMPAQPLAST::STATUSRETENCION.' },
-  { section:'pedidos', sys:'hana', domain:'Ventas', tags:['reporte','hana','python'], title:'extraer-facturas-pricing.sql', path:'facturas-pricing-revenueos/extraer-facturas-pricing.sql', desc:'OINV/INV1 para plantilla RevenueOS.' },
-  { section:'pedidos', sys:'python', domain:'Ventas', tags:['python','etl'], title:'llenar_plantilla_pricing.py', path:'facturas-pricing-revenueos/llenar_plantilla_pricing.py', desc:'Clasificación ABC y Excel.' },
+  { section:'pedidos', sys:'hana', domain:'Compras', tags:['vista','alerta','hana'], title:'SB1_VIEW_ORDENES_COMPRA', path:'hana/compras/SB1_VIEW_ORDENES_COMPRA.sql', desc:'OC abiertas serie OCNAC.' },
+  { section:'pedidos', sys:'sqlserver', domain:'Compras', tags:['alerta','sqlserver'], title:'ORDENES_COMPRA AlertasB1', path:'sqlserver/alertas-b1/AlertasB1_ORDENES_COMPRA_linked_server.sql', desc:'OPENQUERY HANAODBC.' },
+  { section:'pedidos', sys:'python', domain:'Compras', tags:['alerta','python'], title:'NotificacionOrdenesCompra.py', path:'automatizaciones/ordenes-compra/NotificacionOrdenesCompra.py', desc:'Alerta correo.' },
+  { section:'pedidos', sys:'hana', domain:'Supply', tags:['vista','alerta','hana'], title:'create_view_reporte_stock_critico', path:'hana/supply/create_view_reporte_stock_critico.sql', desc:'Vista stock crítico HANA.' },
+  { section:'pedidos', sys:'sqlserver', domain:'Supply', tags:['sp','alerta','sqlserver'], title:'sp_stock_critico_clientes', path:'sqlserver/supply/sp_stock_critico_clientes.sql', desc:'SP puente stock crítico.' },
+  { section:'pedidos', sys:'python', domain:'Supply', tags:['alerta','python'], title:'reporte_stock_critico.py', path:'automatizaciones/stock-critico/reporte_stock_critico.py', desc:'Alerta stock crítico.' },
+  { section:'pedidos', sys:'hana', domain:'Ventas', tags:['reporte','hana','python'], title:'extraer-facturas-pricing.sql', path:'hana/ventas/extraer-facturas-pricing.sql', desc:'OINV/INV1 RevenueOS.' },
+  { section:'pedidos', sys:'python', domain:'Ventas', tags:['python','etl'], title:'llenar_plantilla_pricing.py', path:'automatizaciones/pricing/llenar_plantilla_pricing.py', desc:'Plantilla Excel pricing.' },
 
-  // ── HANA ──
-  { section:'hana', sys:'hana', domain:'Cartera', tags:['reporte','hana'], title:'Clientes con Bloqueo', path:'cartera-sap-b1/Reporte Lista de Clientes con Bloqueo.sql', desc:'Listado clientes bloqueados.' },
-  { section:'hana', sys:'hana', domain:'Cartera', tags:['reporte','hana'], title:'Facturas vencidas excedente', path:'cartera-sap-b1/Reporte Lista de Clientes con Facturas vencidas con excedente.sql', desc:'Cartera vencida con excedente.' },
-  { section:'hana', sys:'hana', domain:'Cartera', tags:['sp','hana'], title:'SP Bloqueo Cartera', path:'cartera-sap-b1/SP Bloqueo Cartera.sql', desc:'Transaction Notification ORDR.' },
-  { section:'hana', sys:'hana', domain:'Inventario', tags:['vista','hana'], title:'SB1_VIEW_REVISION_STOCK_V2', path:'inventario-revision-stock/SB1_VIEW_REVISION_STOCK_V2.sql', desc:'Revisión stock con tránsito y precios OC.' },
-  { section:'hana', sys:'hana', domain:'Inventario', tags:['vista','hana'], title:'Analisis Stock V2 (ALTER)', path:'inventario-revision-stock/Analisis Stock V2.sql', desc:'Copia despliegue ALTER VIEW.' },
-  { section:'hana', sys:'hana', domain:'Inventario', tags:['vista','hana'], title:'SB1_VIEW_UBICACIONES_UPC', path:'inventario-ubicaciones-upc/SB1_VIEW_UBICACIONES_UPC.sql', desc:'Ubicaciones UPC bodegas.' },
-  { section:'hana', sys:'hana', domain:'Inventario', tags:['reporte','hana'], title:'Entrada mercancías OT', path:'inventario-entrada-mercancias-ot/reporte_entrada_mercancias_ot.sql', desc:'Entradas ligadas a OT.' },
-  { section:'hana', sys:'hana', domain:'Producción', tags:['reporte','hana'], title:'Stock UIO/GYE', path:'produccion-inventario-plantas/stock_actual_bodega_uio_gye.sql', desc:'Stock por bodega plantas.' },
-  { section:'hana', sys:'hana', domain:'Producción', tags:['reporte','hana'], title:'Resumen inventario UIO/GYE', path:'produccion-inventario-plantas/resumen_inventario_uio_gye.sql', desc:'Resumen consolidado plantas.' },
-  { section:'hana', sys:'hana', domain:'Producción', tags:['reporte','hana'], title:'Movimientos entrega PT', path:'produccion-inventario-plantas/reporte_movimientos_entrega_pt_em.sql', desc:'Entrega producto terminado.' },
-  { section:'hana', sys:'hana', domain:'Producción', tags:['vista','hana'], title:'alter_view_prod_transformados', path:'produccion-transformados/alter_view_prod_transformados.sql', desc:'Vista transformados.' },
-  { section:'hana', sys:'hana', domain:'Producción', tags:['reporte','hana'], title:'kg transformados eficiencia', path:'produccion-transformados/kg_transformados_eficiencia_energetica.sql', desc:'Kg para eficiencia energética.' },
-  { section:'hana', sys:'hana', domain:'Moldes', tags:['vista','hana'], title:'create_view_analisis_moldes', path:'analisis-moldes/create_view_analisis_moldes.sql', desc:'Vista análisis moldes.' },
-  { section:'hana', sys:'hana', domain:'Moldes', tags:['reporte','hana'], title:'fact_analisis_moldes', path:'analisis-moldes/fact_analisis_moldes.sql', desc:'Hechos moldes (actual).' },
-  { section:'hana', sys:'hana', domain:'Moldes', tags:['reporte','hana'], title:'validacion_ciclo_real_2026', path:'analisis-moldes/validacion_ciclo_real_2026.sql', desc:'Validación ciclo real 2026.' },
-  { section:'hana', sys:'hana', domain:'Supply', tags:['vista','hana','alerta'], title:'create_view_reporte_stock_critico', path:'stock-critico-clientes/create_view_reporte_stock_critico.sql', desc:'Vista stock crítico HANA.' },
-  { section:'hana', sys:'hana', domain:'Supply', tags:['reporte','hana'], title:'reporte_stock_critico', path:'stock-critico-clientes/reporte_stock_critico.sql', desc:'Consulta stock crítico.' },
-  { section:'hana', sys:'hana', domain:'Eficiencia', tags:['reporte','hana'], title:'reporte_combustible', path:'eficiencia-energetica-combustible/reporte_combustible.sql', desc:'Consumo combustible.' },
-  { section:'hana', sys:'hana', domain:'Admin', tags:['reporte','hana'], title:'sap_b1_vistas_clasificacion', path:'admin-sap-b1/sap_b1_vistas_clasificacion.sql', desc:'Inventario vistas B1.' },
-  { section:'hana', sys:'hana', domain:'Admin', tags:['reporte','hana'], title:'sap_b1_licencias_usuarios', path:'admin-sap-b1/sap_b1_licencias_usuarios.sql', desc:'Licencias usuarios SAP.' },
-  { section:'hana', sys:'hana', domain:'Admin', tags:['reporte','hana'], title:'sap_b1_query_manager_reportes', path:'admin-sap-b1/sap_b1_query_manager_reportes.sql', desc:'Query Manager reportes.' },
-  { section:'hana', sys:'hana', domain:'IA', tags:['reporte','hana'], title:'creacion_usuario_ia_bdd', path:'usuario-ia-bdd/creacion_usuario_ia_bdd.sql', desc:'Usuario BD proyectos IA.' },
-  { section:'hana', sys:'hana', domain:'Logística', tags:['reporte','hana'], title:'Reporte Pallets', path:'reporte-pallets-automatizacion/Reporte Pallets.sql', desc:'ODLN+OWTR flujo n8n pallets.' },
-  { section:'hana', sys:'hana', domain:'Validación', tags:['sp','hana'], title:'SPTNLVS TransactionNotification', path:'sp-transaction-notification-lvs/SPTNLVS06072026.sql', desc:'SP Transaction Notification LVS.' },
-  { section:'hana', sys:'hana', domain:'Ops', tags:['reporte','hana'], title:'diagnostico_conexiones_hana', path:'hana-diagnostico-conexiones/diagnostico_conexiones_hana.sql', desc:'SYS.M_CONNECTIONS diagnóstico.' },
+  { section:'hana', sys:'hana', domain:'Administración', tags:['reporte','hana'], title:'sap_b1_vistas_clasificacion', path:'hana/administracion/sap_b1_vistas_clasificacion.sql', desc:'Inventario vistas B1.' },
+  { section:'hana', sys:'hana', domain:'Administración', tags:['reporte','hana'], title:'sap_b1_licencias_usuarios', path:'hana/administracion/sap_b1_licencias_usuarios.sql', desc:'Licencias SAP.' },
+  { section:'hana', sys:'hana', domain:'Administración', tags:['reporte','hana'], title:'sap_b1_query_manager_reportes', path:'hana/administracion/sap_b1_query_manager_reportes.sql', desc:'Query Manager.' },
+  { section:'hana', sys:'hana', domain:'Cartera', tags:['reporte','hana'], title:'Clientes con Bloqueo', path:'hana/cartera/Reporte Lista de Clientes con Bloqueo.sql', desc:'Clientes bloqueados.' },
+  { section:'hana', sys:'hana', domain:'Cartera', tags:['reporte','hana'], title:'Facturas vencidas', path:'hana/cartera/Reporte Lista de Clientes con Facturas vencidas con excedente.sql', desc:'Cartera vencida.' },
+  { section:'hana', sys:'hana', domain:'Cartera', tags:['sp','hana'], title:'SP Bloqueo Cartera', path:'hana/cartera/SP Bloqueo Cartera.sql', desc:'Transaction Notification.' },
+  { section:'hana', sys:'hana', domain:'Cartera', tags:['vista','hana'], title:'SB1_VIEW_STATUS_RETENCION_CARTERA', path:'hana/cartera/SB1_VIEW_STATUS_RETENCION_CARTERA.sql', desc:'Retenciones.' },
+  { section:'hana', sys:'hana', domain:'Inventario', tags:['vista','hana'], title:'SB1_VIEW_REVISION_STOCK_V2', path:'hana/inventario/SB1_VIEW_REVISION_STOCK_V2.sql', desc:'Revisión stock.' },
+  { section:'hana', sys:'hana', domain:'Inventario', tags:['vista','hana'], title:'SB1_VIEW_UBICACIONES_UPC', path:'hana/inventario/SB1_VIEW_UBICACIONES_UPC.sql', desc:'Ubicaciones UPC.' },
+  { section:'hana', sys:'hana', domain:'Inventario', tags:['reporte','hana'], title:'Entrada mercancías OT', path:'hana/inventario/reporte_entrada_mercancias_ot.sql', desc:'Entradas OT.' },
+  { section:'hana', sys:'hana', domain:'Producción', tags:['reporte','hana'], title:'Stock UIO/GYE', path:'hana/produccion/stock_actual_bodega_uio_gye.sql', desc:'Stock plantas.' },
+  { section:'hana', sys:'hana', domain:'Producción', tags:['vista','hana'], title:'alter_view_prod_transformados', path:'hana/produccion/alter_view_prod_transformados.sql', desc:'Transformados.' },
+  { section:'hana', sys:'hana', domain:'Moldes', tags:['vista','hana'], title:'create_view_analisis_moldes', path:'hana/produccion/moldes/create_view_analisis_moldes.sql', desc:'Vista moldes.' },
+  { section:'hana', sys:'hana', domain:'Logística', tags:['reporte','hana'], title:'Traslado vs Salida', path:'hana/logistica/traslado_vs_salida_promedio_ponderado.sql', desc:'Promedio ponderado.' },
+  { section:'hana', sys:'hana', domain:'Logística', tags:['reporte','hana'], title:'Reporte Pallets', path:'hana/logistica/Reporte Pallets.sql', desc:'ODLN/OWTR n8n.' },
+  { section:'hana', sys:'hana', domain:'Eficiencia', tags:['reporte','hana'], title:'reporte_combustible', path:'hana/eficiencia-energetica/reporte_combustible.sql', desc:'Combustible.' },
+  { section:'hana', sys:'hana', domain:'IA', tags:['reporte','hana'], title:'creacion_usuario_ia_bdd', path:'hana/ia/creacion_usuario_ia_bdd.sql', desc:'Usuario BD IA.' },
+  { section:'hana', sys:'hana', domain:'Ops', tags:['reporte','hana'], title:'diagnostico_conexiones_hana', path:'hana/ops/diagnostico_conexiones_hana.sql', desc:'SYS.M_CONNECTIONS.' },
+  { section:'hana', sys:'hana', domain:'Validación', tags:['sp','hana'], title:'SPTNLVS', path:'hana/validaciones/SPTNLVS06072026.sql', desc:'Transaction Notification LVS.' },
 
-  // ── SQL Server ──
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['vista','sqlserver','powerbi'], title:'vm_atrasos_vista_completa', path:'vm-atrasos-tcontrol/vm_atrasos_vista_completa.sql', desc:'Vista integral atrasos y faltas.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['vista','sqlserver'], title:'vm_atrasos_v2_mejorada', path:'vm-atrasos-tcontrol/vm_atrasos_v2_mejorada.sql', desc:'Versión mejorada vm_atrasos.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'vm_atrasos_analisis_mejoras', path:'vm-atrasos-tcontrol/vm_atrasos_analisis_mejoras.sql', desc:'Análisis mejoras vm_atrasos.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'alter_vm_atrasos_cuadro_horarios', path:'vm-atrasos-tcontrol/alter_vm_atrasos_cuadro_horarios.sql', desc:'Ajuste cuadro horarios.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'create_festivos_ecuador_2026', path:'vm-atrasos-tcontrol/create_festivos_ecuador_2026.sql', desc:'Festivos Ecuador 2026.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver','powerbi'], title:'powerbi_dashboard_queries', path:'dashboard-rrhh-powerbi/powerbi_dashboard_queries.sql', desc:'25 consultas dashboard RRHH.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver','powerbi'], title:'powerbi_vm_atrasos_queries', path:'dashboard-rrhh-powerbi/powerbi_vm_atrasos_queries.sql', desc:'Consultas Power BI vm_atrasos.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'tcontrol_asistencia_empleados', path:'tcontrol-asistencia-turnos/tcontrol_asistencia_empleados.sql', desc:'Asistencia por empleado.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'tcontrol_cumplimiento_turnos_planta', path:'tcontrol-asistencia-turnos/tcontrol_cumplimiento_turnos_planta.sql', desc:'Cumplimiento turnos planta.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['sp','sqlserver'], title:'sp_codigo_empleado', path:'tcontrol-asistencia-turnos/sp_codigo_empleado.sql', desc:'SP código empleado.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'Permisos con Paga', path:'permisos-con-paga-tcontrol/Reporte de Permisos con Paga.sql', desc:'Permisos período 21-20.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'catalogo_tipos_permiso', path:'permisos-con-paga-tcontrol/catalogo_tipos_permiso.sql', desc:'Catálogo tipos permiso CD_PAGADO.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'correccion_permiso_sin_paga', path:'permisos-con-paga-tcontrol/correccion_permiso_sin_paga.sql', desc:'Corrección E_FPAG permisos sin paga.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'Supply', tags:['sp','sqlserver'], title:'sp_stock_critico_clientes', path:'stock-critico-clientes/sp_stock_critico_clientes.sql', desc:'SP stock crítico SQL Server.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'ETL', tags:['etl','sqlserver'], title:'Proceso de carga Rotacion', path:'carga-rotacion-etl/Proceso de carga Rotacion.sql', desc:'Carga incremental upsert.' },
-  { section:'sqlserver', sys:'sqlserver', domain:'Ops', tags:['reporte','sqlserver'], title:'backups_manual', path:'backups-sqlserver/backups_manual.sql', desc:'Scripts backup manual.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['vista','sqlserver','powerbi'], title:'vm_atrasos_vista_completa', path:'sqlserver/rrhh/vm_atrasos_vista_completa.sql', desc:'Vista atrasos.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver','powerbi'], title:'powerbi_dashboard_queries', path:'sqlserver/rrhh/powerbi_dashboard_queries.sql', desc:'Dashboard RRHH.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'Permisos con Paga', path:'sqlserver/rrhh/Reporte de Permisos con Paga.sql', desc:'Permisos 21-20.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'ETL', tags:['etl','sqlserver'], title:'Proceso carga Rotacion', path:'sqlserver/etl/Proceso de carga Rotacion.sql', desc:'Upsert incremental.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'Ops', tags:['reporte','sqlserver'], title:'backups_manual', path:'sqlserver/ops/backups_manual.sql', desc:'Backups.' },
 
-  // ── PostgreSQL ──
-  { section:'postgres', sys:'postgres', domain:'Infra', tags:['reporte','postgres'], title:'Crear Base de datos', path:'postgres-app-empaqplast/Crear Base de datos en postgres.sql', desc:'DDL creación BD.' },
-  { section:'postgres', sys:'postgres', domain:'Auth', tags:['reporte','postgres'], title:'AutenticaciónNuevo', path:'postgres-app-empaqplast/AutenticaciónNuevo.sql', desc:'Permisos y menús auth app.' },
-  { section:'postgres', sys:'postgres', domain:'NPS', tags:['reporte','postgres'], title:'Conf Nps', path:'nps-campana-semestral/Conf Nps.sql', desc:'Campaña NPS semestral.' },
-
-  // ── Python ──
-  { section:'python', sys:'python', domain:'Supply', tags:['alerta','python'], title:'reporte_stock_critico.py', path:'stock-critico-clientes/reporte_stock_critico.py', desc:'Alerta stock crítico.' },
+  { section:'postgres', sys:'postgres', domain:'App', tags:['reporte','postgres'], title:'AutenticaciónNuevo', path:'postgres/app/AutenticaciónNuevo.sql', desc:'Auth app.' },
+  { section:'postgres', sys:'postgres', domain:'NPS', tags:['reporte','postgres'], title:'Conf Nps', path:'postgres/nps/Conf Nps.sql', desc:'Campaña NPS.' },
 ];
 
 const FOLDERS = [
-  { name:'ordenes-compra-sap-b1', motor:'HANA + SQL Server + Python', files:3, desc:'OC abiertas OCNAC, alerta correo.' },
-  { name:'traslado-vs-salida-mercancia', motor:'HANA', files:1, desc:'Traslado vs salida con promedio ponderado.' },
-  { name:'status-retencion-cartera', motor:'HANA', files:1, desc:'Vista retenciones cartera.' },
-  { name:'facturas-pricing-revenueos', motor:'HANA + Python', files:2, desc:'Pricing RevenueOS desde facturas.' },
-  { name:'cartera-sap-b1', motor:'HANA', files:3, desc:'Bloqueos, vencidas, SP Transaction Notification.' },
-  { name:'inventario-revision-stock', motor:'HANA', files:2, desc:'SB1_VIEW_REVISION_STOCK_V2.' },
-  { name:'inventario-ubicaciones-upc', motor:'HANA', files:1, desc:'Ubicaciones UPC.' },
-  { name:'inventario-entrada-mercancias-ot', motor:'HANA', files:1, desc:'Entradas mercancía OT.' },
-  { name:'produccion-inventario-plantas', motor:'HANA', files:3, desc:'Stock y movimientos UIO/GYE.' },
-  { name:'produccion-transformados', motor:'HANA', files:2, desc:'Transformados y eficiencia energética.' },
-  { name:'analisis-moldes', motor:'HANA', files:5, desc:'Vista, hechos y validación moldes.' },
-  { name:'stock-critico-clientes', motor:'HANA + SQL Server + Python', files:4, desc:'Vista, SP, reporte y alerta.' },
-  { name:'eficiencia-energetica-combustible', motor:'HANA', files:1, desc:'Reporte combustible.' },
-  { name:'admin-sap-b1', motor:'HANA', files:3, desc:'Vistas, licencias, Query Manager.' },
-  { name:'usuario-ia-bdd', motor:'HANA', files:1, desc:'Usuario BD IA.' },
-  { name:'reporte-pallets-automatizacion', motor:'HANA', files:1, desc:'Pallets ODLN/OWTR n8n.' },
-  { name:'sp-transaction-notification-lvs', motor:'HANA', files:1, desc:'SP Transaction Notification LVS.' },
-  { name:'hana-diagnostico-conexiones', motor:'HANA', files:1, desc:'Diagnóstico conexiones SYS.' },
-  { name:'vm-atrasos-tcontrol', motor:'SQL Server', files:6, desc:'Vista vm_atrasos y derivados.' },
-  { name:'dashboard-rrhh-powerbi', motor:'SQL Server', files:4, desc:'Consultas y docs Power BI RRHH.' },
-  { name:'tcontrol-asistencia-turnos', motor:'SQL Server', files:3, desc:'Asistencia, turnos, SP empleado.' },
-  { name:'permisos-con-paga-tcontrol', motor:'SQL Server', files:3, desc:'Permisos con/sin paga TimeControl.' },
-  { name:'carga-rotacion-etl', motor:'SQL Server', files:1, desc:'ETL rotación incremental.' },
-  { name:'backups-sqlserver', motor:'SQL Server', files:1, desc:'Backups manuales.' },
-  { name:'postgres-app-empaqplast', motor:'PostgreSQL', files:2, desc:'Auth app y DDL infra.' },
-  { name:'nps-campana-semestral', motor:'PostgreSQL', files:1, desc:'Campañas NPS semestrales.' },
-  { name:'activos-fracttal', motor:'Fracttal', files:1, desc:'Estadísticas activos exportados.' },
-  { name:'catalogo-consultas', motor:'Docs', files:1, desc:'Esta guía HTML.' },
+  { name:'hana/administracion', motor:'HANA', files:3, desc:'Admin SAP B1.' },
+  { name:'hana/cartera', motor:'HANA', files:4, desc:'Cartera y retenciones.' },
+  { name:'hana/compras', motor:'HANA', files:1, desc:'Órdenes de compra OCNAC.' },
+  { name:'hana/inventario', motor:'HANA', files:4, desc:'Stock, UPC, entradas OT.' },
+  { name:'hana/produccion', motor:'HANA', files:10, desc:'Plantas, transformados, moldes.' },
+  { name:'hana/supply', motor:'HANA', files:2, desc:'Stock crítico vistas.' },
+  { name:'hana/logistica', motor:'HANA', files:2, desc:'Traslados y pallets.' },
+  { name:'hana/ventas', motor:'HANA', files:1, desc:'Pricing facturas.' },
+  { name:'hana/eficiencia-energetica', motor:'HANA', files:1, desc:'Combustible.' },
+  { name:'hana/ia', motor:'HANA', files:1, desc:'Usuario IA.' },
+  { name:'hana/ops', motor:'HANA', files:1, desc:'Diagnóstico conexiones.' },
+  { name:'hana/validaciones', motor:'HANA', files:1, desc:'Transaction Notifications.' },
+  { name:'sqlserver/alertas-b1', motor:'SQL Server', files:1, desc:'OPENQUERY HANA.' },
+  { name:'sqlserver/rrhh', motor:'SQL Server', files:16, desc:'Atrasos, Power BI, permisos.' },
+  { name:'sqlserver/supply', motor:'SQL Server', files:1, desc:'SP stock crítico.' },
+  { name:'sqlserver/etl', motor:'SQL Server', files:1, desc:'Rotación.' },
+  { name:'sqlserver/ops', motor:'SQL Server', files:1, desc:'Backups.' },
+  { name:'postgres/app', motor:'PostgreSQL', files:2, desc:'Auth y DDL.' },
+  { name:'postgres/nps', motor:'PostgreSQL', files:1, desc:'NPS semestral.' },
+  { name:'automatizaciones', motor:'Python', files:3, desc:'Alertas y pricing.' },
+  { name:'fracttal', motor:'Fracttal', files:3, desc:'Exportes activos.' },
+  { name:'catalogo-consultas', motor:'Docs', files:1, desc:'Guía HTML.' },
 ];
 
 const SYS_LABEL = { hana:'HANA', sqlserver:'SQL Server', postgres:'PostgreSQL', python:'Python' };
@@ -477,7 +446,7 @@ function renderSections() {
     </div>`).join('');
   document.getElementById('stats').innerHTML = [
     ['sql', CATALOG.filter(c=>c.path.endsWith('.sql')).length, 'Archivos .sql'],
-    ['carpetas', FOLDERS.length, 'Carpetas'],
+    ['carpetas', 6, 'BDD raíz'],
     ['vistas', CATALOG.filter(c=>c.tags.includes('vista')).length, 'Vistas'],
     ['alertas', CATALOG.filter(c=>c.tags.includes('alerta')).length, 'Alertas'],
   ].map(([_,n,l]) => `<div class="stat"><div class="stat-n">${n}</div><div class="stat-l">${l}</div></div>`).join('');

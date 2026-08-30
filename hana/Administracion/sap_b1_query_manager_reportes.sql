@@ -1,6 +1,6 @@
--- =============================================================================
--- SAP B1 sobre HANA - Reportes del Query Manager con categoría y área
--- Área inferida SOLO por tablas/vistas que aparecen en el SQL (QString).
+﻿-- =============================================================================
+-- SAP B1 sobre HANA - Reportes del Query Manager con categor├¡a y ├írea
+-- ├ürea inferida SOLO por tablas/vistas que aparecen en el SQL (QString).
 -- Patrones amplios para cubrir: "OINV", OINV, T0.OINV, "ESQUEMA"."OINV", etc.
 -- Esquema: EMPAQPLAST_PROD
 -- =============================================================================
@@ -28,14 +28,14 @@ SELECT
           OR T0."QString" LIKE '%OSLP%'
           OR T0."QString" LIKE '%SB1_VIEW_REPORTECLIENTEVENDEDOR%' OR T0."QString" LIKE '%SB1_VIEW_VENTAS%'
              THEN 'Ventas'
-        -- Compras: órdenes compra, solicitudes, cotizaciones compra, entradas, facturas proveedor
+        -- Compras: ├│rdenes compra, solicitudes, cotizaciones compra, entradas, facturas proveedor
         WHEN T0."QString" LIKE '%OPOR%' OR T0."QString" LIKE '%POR1%'
           OR T0."QString" LIKE '%OPRQ%' OR T0."QString" LIKE '%PRQ1%'
           OR T0."QString" LIKE '%OPQT%' OR T0."QString" LIKE '%PQT1%'
           OR T0."QString" LIKE '%OPDN%' OR T0."QString" LIKE '%PDN1%'
           OR T0."QString" LIKE '%OPCH%' OR T0."QString" LIKE '%PCH1%'
              THEN 'Compras'
-        -- Inventario: ítems, bodegas, traslados, entradas/salidas (OIGN/IGN1), lotes, vistas stock
+        -- Inventario: ├¡tems, bodegas, traslados, entradas/salidas (OIGN/IGN1), lotes, vistas stock
         WHEN T0."QString" LIKE '%OITM%' OR T0."QString" LIKE '%OITW%'
           OR T0."QString" LIKE '%OWHS%' OR T0."QString" LIKE '%OWTR%' OR T0."QString" LIKE '%WTR1%'
           OR T0."QString" LIKE '%OIGE%' OR T0."QString" LIKE '%IGE1%'
@@ -46,13 +46,13 @@ SELECT
           OR T0."QString" LIKE '%SB1_VIEW_ANALISIS_STOCK%' OR T0."QString" LIKE '%SB1_VIEW_REVISION_STOCK%'
           OR T0."QString" LIKE '%SB1_VIEW_PERMANECIA%'
              THEN 'Inventario'
-        -- Tesorería / Bancos: cuentas bancarias, cheques, conciliaciones bancarias
+        -- Tesorer├¡a / Bancos: cuentas bancarias, cheques, conciliaciones bancarias
         WHEN T0."QString" LIKE '%OBNK%' OR T0."QString" LIKE '%BNK1%'
           OR T0."QString" LIKE '%OCHO%' OR T0."QString" LIKE '%OCQN%'
           OR T0."QString" LIKE '%OBOE%' OR T0."QString" LIKE '%BOE1%'
           OR T0."QString" LIKE '%OBTB%' OR T0."QString" LIKE '%BTB1%'
           OR T0."QString" LIKE '%SB1_VIEW_%BANCO%' OR T0."QString" LIKE '%SB1_VIEW_%CHEQUE%'
-             THEN 'Tesorería / Bancos'
+             THEN 'Tesorer├¡a / Bancos'
         -- Pagos y Cobros: pagos emitidos, pagos recibidos, anticipos
         WHEN T0."QString" LIKE '%OVPM%' OR T0."QString" LIKE '%VPM1%'
           OR T0."QString" LIKE '%ORCT%' OR T0."QString" LIKE '%RCT1%'
@@ -66,10 +66,10 @@ SELECT
           OR T0."QString" LIKE '%OBTD%'
           OR T0."QString" LIKE '%OITR%' OR T0."QString" LIKE '%ITR1%'
              THEN 'Contabilidad'
-        -- Notas de crédito/débito (ventas y compras)
+        -- Notas de cr├®dito/d├®bito (ventas y compras)
         WHEN T0."QString" LIKE '%ORIN%' OR T0."QString" LIKE '%RIN1%'
           OR T0."QString" LIKE '%ORPC%' OR T0."QString" LIKE '%RPC1%'
-             THEN 'Notas Crédito/Débito'
+             THEN 'Notas Cr├®dito/D├®bito'
         -- Cartera / Cuentas por cobrar y pagar (vistas personalizadas)
         WHEN T0."QString" LIKE '%SB1_VIEW_%CARTERA%'
           OR T0."QString" LIKE '%SB1_VIEW_%FLUJO%'
@@ -83,9 +83,9 @@ SELECT
           OR T0."QString" LIKE '%SB1_VIEW_%PROYECTO%' OR T0."QString" LIKE '%SB1_VIEW_%PLANIFICACION%'
           OR T0."QString" LIKE '%SB1_VIEW_%INVERSION%'
              THEN 'Proyectos'
-        -- Producción estándar B1 (órdenes de trabajo)
+        -- Producci├│n est├índar B1 (├│rdenes de trabajo)
         WHEN T0."QString" LIKE '%OWOR%' OR T0."QString" LIKE '%WOR1%'
-             THEN 'Producción SBO'
+             THEN 'Producci├│n SBO'
         -- RRHH
         WHEN T0."QString" LIKE '%OHEM%'
              THEN 'RRHH'

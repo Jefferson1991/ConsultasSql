@@ -1,4 +1,4 @@
--- =====================================================================
+﻿-- =====================================================================
 -- EMPAQPLAST_PROD.SB1_VIEW_REVISION_STOCK_V2
 -- =====================================================================
 -- CORRECCION 2026-06-23 (Jefferson Vasconez):
@@ -19,14 +19,14 @@
 CREATE VIEW EMPAQPLAST_PROD.SB1_VIEW_REVISION_STOCK_V2 AS
 SELECT
     -- =====================================================
-    -- DATOS DE LA REVISIÓN
+    -- DATOS DE LA REVISI├ôN
     -- =====================================================
     T0."Code"            AS "Revision_Code",
     T0."U_EMPA_DIAS_SUG" AS "Dias_Sugeridos",
     T0."U_EMPA_FECHA"    AS "Fecha_Revision",
 
     -- =====================================================
-    -- DATOS DEL ARTÍCULO
+    -- DATOS DEL ART├ìCULO
     -- =====================================================
     T1."U_EMPA_MP_CODE"    AS "Codigo_MP",
     T1."U_EMPA_ITEMCODE"   AS "Codigo_Articulo",
@@ -36,16 +36,16 @@ SELECT
     T1."U_EMPA_STOCK_SEG"  AS "Stock_Seguridad_Lin",
 
     -- =====================================================
-    -- PARÁMETROS MAESTROS
+    -- PAR├üMETROS MAESTROS
     -- =====================================================
     T6."LeadTime"                  AS "Lead_Time",
     COALESCE(T6."MinOrdrQty", 0)   AS "MOQ",
     0.10  AS "Pct_Lead_Time",   -- Variabilidad del Lead Time
-    15    AS "Frecuencia_Dias", -- Frecuencia de revisión
-    0.80  AS "Pct_Variacion",   -- Variación de demanda
+    15    AS "Frecuencia_Dias", -- Frecuencia de revisi├│n
+    0.80  AS "Pct_Variacion",   -- Variaci├│n de demanda
 
     -- =====================================================
-    -- STOCK FÍSICO Y TRÁNSITO
+    -- STOCK F├ìSICO Y TR├üNSITO
     -- =====================================================
     COALESCE(T3."OnHand",0)                                AS "Stock_Fisico_UIO",
     COALESCE(T5."OnHand",0)                                AS "Stock_Fisico_GYE",
@@ -58,7 +58,7 @@ SELECT
     ) AS "Stock_Neto_kg",
 
     -- =====================================================
-    -- DÍAS DE COBERTURA
+    -- D├ìAS DE COBERTURA
     -- =====================================================
     ROUND( (COALESCE(T3."OnHand",0) + COALESCE(T5."OnHand",0))
            / NULLIF(T1."U_EMPA_CONS_DIARIO",0), 2 ) AS "Dias_Stock_Fisico",
@@ -71,7 +71,7 @@ SELECT
     END AS "Dias_Stock_Neto",
 
     -- =====================================================
-    -- FECHAS DE ANÁLISIS
+    -- FECHAS DE AN├üLISIS
     -- =====================================================
     CURRENT_DATE AS "Fecha_Analisis",
 
@@ -112,7 +112,7 @@ SELECT
          AS "TDV_Stock_Maximo",
 
     -- =====================================================
-    -- SEMÁFORO DE ESTADO
+    -- SEM├üFORO DE ESTADO
     -- =====================================================
     CASE
         WHEN ( COALESCE(T3."OnHand",0) + COALESCE(T5."OnHand",0) +
@@ -137,7 +137,7 @@ SELECT
     END AS "Estado_Stock",
 
     -- =====================================================
-    -- INDICADORES DE PLANIFICACIÓN
+    -- INDICADORES DE PLANIFICACI├ôN
     -- =====================================================
     ROUND( ((T1."U_EMPA_CONS_DIARIO" * T6."LeadTime" * 0.10)
           + (T1."U_EMPA_CONS_DIARIO" * T6."LeadTime" * 0.10 * 0.80))
@@ -185,24 +185,24 @@ SELECT
     ) AS "Fecha_Sugerida_Llegada",
 
     -- =====================================================
-    -- ÚLTIMO PEDIDO Y RANGO DE PRECIOS HISTÓRICOS
+    -- ├ÜLTIMO PEDIDO Y RANGO DE PRECIOS HIST├ôRICOS
     -- =====================================================
     COALESCE(ULT_PEDIDO."Price", 0)         AS "Precio_Ultimo_Pedido",
     COALESCE(ULT_PEDIDO."Price", 0) * 1.10  AS "Precio_CIF",
     ULT_PEDIDO."DocNum"                     AS "Nro_Pedido_Ultimo",
     ULT_PEDIDO."DocDate"                    AS "Fecha_Pedido_Ultimo",
 
-    -- Precio mínimo de compra histórico + OC donde se compró a ese precio
+    -- Precio m├¡nimo de compra hist├│rico + OC donde se compr├│ a ese precio
     ROUND( PRECIO_MIN."Precio_Min", 4 )  AS "Precio_Min_Compra",
     PRECIO_MIN."DocNum_Min"              AS "OC_Precio_Min",
     PRECIO_MIN."DocDate_Min"             AS "Fecha_OC_Precio_Min",
 
-    -- Precio máximo de compra histórico + OC donde se compró a ese precio
+    -- Precio m├íximo de compra hist├│rico + OC donde se compr├│ a ese precio
     ROUND( PRECIO_MAX."Precio_Max", 4 )  AS "Precio_Max_Compra",
     PRECIO_MAX."DocNum_Max"              AS "OC_Precio_Max",
     PRECIO_MAX."DocDate_Max"             AS "Fecha_OC_Precio_Max",
 
-    -- Precio promedio histórico
+    -- Precio promedio hist├│rico
     ROUND( PRECIO_AVG."Precio_Prom", 4 ) AS "Precio_Prom_Compra",
 
     COALESCE(T3."AvgPrice",0)               AS "Costo_Prom_UIO_MP",
@@ -234,7 +234,7 @@ LEFT  JOIN OITW T5 ON T1."U_EMPA_MP_CODE" = T5."ItemCode" AND T5."WhsCode" = 'GY
 LEFT  JOIN OITW T4 ON T1."U_EMPA_MP_CODE" = T4."ItemCode" AND T4."WhsCode" = 'UIO_IMPT'
 LEFT  JOIN OITM T6 ON T1."U_EMPA_MP_CODE" = T6."ItemCode"
 
--- ÚLTIMO PEDIDO DE COMPRA
+-- ├ÜLTIMO PEDIDO DE COMPRA
 LEFT  JOIN (
     SELECT
         POR1."ItemCode",
@@ -246,7 +246,7 @@ LEFT  JOIN (
     INNER JOIN POR1 ON OPOR."DocEntry" = POR1."DocEntry"
 ) ULT_PEDIDO ON T1."U_EMPA_MP_CODE" = ULT_PEDIDO."ItemCode" AND ULT_PEDIDO."Rank" = 1
 
--- PRECIO MÍNIMO HISTÓRICO + DocNum y Fecha de esa orden
+-- PRECIO M├ìNIMO HIST├ôRICO + DocNum y Fecha de esa orden
 LEFT  JOIN (
     SELECT "ItemCode", "Precio_Min", "DocNum_Min", "DocDate_Min"
     FROM (
@@ -267,7 +267,7 @@ LEFT  JOIN (
     WHERE "Rnk" = 1
 ) PRECIO_MIN ON T1."U_EMPA_MP_CODE" = PRECIO_MIN."ItemCode"
 
--- PRECIO MÁXIMO HISTÓRICO + DocNum y Fecha de esa orden
+-- PRECIO M├üXIMO HIST├ôRICO + DocNum y Fecha de esa orden
 LEFT  JOIN (
     SELECT "ItemCode", "Precio_Max", "DocNum_Max", "DocDate_Max"
     FROM (
@@ -288,7 +288,7 @@ LEFT  JOIN (
     WHERE "Rnk" = 1
 ) PRECIO_MAX ON T1."U_EMPA_MP_CODE" = PRECIO_MAX."ItemCode"
 
--- PRECIO PROMEDIO HISTÓRICO
+-- PRECIO PROMEDIO HIST├ôRICO
 LEFT  JOIN (
     SELECT
         POR1."ItemCode",

@@ -1,4 +1,4 @@
--- =============================================================================
+﻿-- =============================================================================
 -- SAP B1 sobre HANA - Reporte de Licencias y Usuarios
 -- Esquema: EMPAQPLAST_PROD
 -- =============================================================================
@@ -15,7 +15,7 @@ SELECT
         WHEN T0."dType" = 'H' THEN 'Limited'
         ELSE 'Otro'
     END                 AS "TipoLicencia",
-    CASE WHEN T0."SUPERUSER" = 'Y' THEN 'Sí' ELSE 'No' END AS "EsSuperUsuario",
+    CASE WHEN T0."SUPERUSER" = 'Y' THEN 'S├¡' ELSE 'No' END AS "EsSuperUsuario",
     T0."createDate"     AS "FechaCreacion",
     T0."lastLogin"      AS "UltimoLogin",
     DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) AS "DiasDesdeUltimoLogin"
@@ -36,7 +36,7 @@ SELECT
         WHEN T0."dType" = 'H' THEN 'Limited'
         ELSE 'Otro'
     END                 AS "TipoLicencia",
-    CASE WHEN T0."SUPERUSER" = 'Y' THEN 'Sí' ELSE 'No' END AS "EsSuperUsuario",
+    CASE WHEN T0."SUPERUSER" = 'Y' THEN 'S├¡' ELSE 'No' END AS "EsSuperUsuario",
     T0."createDate"     AS "FechaCreacion",
     T0."lastLogin"      AS "UltimoLogin",
     DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) AS "DiasDesdeUltimoLogin"
@@ -75,7 +75,7 @@ SELECT
         WHEN T0."dType" = 'H' THEN 'Limited'
         ELSE 'Otro'
     END                                 AS "TipoLicencia",
-    CASE WHEN T0."SUPERUSER" = 'Y' THEN 'Sí' ELSE 'No' END AS "EsSuperUsuario",
+    CASE WHEN T0."SUPERUSER" = 'Y' THEN 'S├¡' ELSE 'No' END AS "EsSuperUsuario",
     CASE WHEN T0."Locked" = 'Y' THEN 'Bloqueado' ELSE 'Activo' END AS "Estado",
     T0."createDate"                     AS "FechaCreacion",
     T0."lastLogin"                      AS "UltimoLogin",
@@ -86,7 +86,7 @@ SELECT
     T1."PromedioSesionesMes"
 FROM EMPAQPLAST_PROD."OUSR" T0
 LEFT JOIN (
-    -- Subquery para estadísticas de sesiones por usuario
+    -- Subquery para estad├¡sticas de sesiones por usuario
     SELECT 
         "UserCode",
         COUNT(*) AS "TotalSesiones",
@@ -100,16 +100,16 @@ ORDER BY T0."lastLogin" DESC NULLS LAST;
 
 
 -- =============================================================================
--- 3. USUARIOS ACTIVOS VS INACTIVOS (últimos 30/60/90 días)
+-- 3. USUARIOS ACTIVOS VS INACTIVOS (├║ltimos 30/60/90 d├¡as)
 -- =============================================================================
 SELECT
     CASE 
         WHEN T0."Locked" = 'Y' THEN 'Bloqueado'
-        WHEN T0."lastLogin" IS NULL THEN 'Nunca ingresó'
-        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 30 THEN 'Activo (0-30 días)'
-        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 60 THEN 'Moderado (31-60 días)'
-        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 90 THEN 'Bajo uso (61-90 días)'
-        ELSE 'Inactivo (+90 días)'
+        WHEN T0."lastLogin" IS NULL THEN 'Nunca ingres├│'
+        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 30 THEN 'Activo (0-30 d├¡as)'
+        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 60 THEN 'Moderado (31-60 d├¡as)'
+        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 90 THEN 'Bajo uso (61-90 d├¡as)'
+        ELSE 'Inactivo (+90 d├¡as)'
     END AS "Categoria_Actividad",
     CASE 
         WHEN T0."dType" = 'S' THEN 'Professional'
@@ -121,11 +121,11 @@ FROM EMPAQPLAST_PROD."OUSR" T0
 GROUP BY
     CASE 
         WHEN T0."Locked" = 'Y' THEN 'Bloqueado'
-        WHEN T0."lastLogin" IS NULL THEN 'Nunca ingresó'
-        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 30 THEN 'Activo (0-30 días)'
-        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 60 THEN 'Moderado (31-60 días)'
-        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 90 THEN 'Bajo uso (61-90 días)'
-        ELSE 'Inactivo (+90 días)'
+        WHEN T0."lastLogin" IS NULL THEN 'Nunca ingres├│'
+        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 30 THEN 'Activo (0-30 d├¡as)'
+        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 60 THEN 'Moderado (31-60 d├¡as)'
+        WHEN DAYS_BETWEEN(T0."lastLogin", CURRENT_DATE) <= 90 THEN 'Bajo uso (61-90 d├¡as)'
+        ELSE 'Inactivo (+90 d├¡as)'
     END,
     CASE 
         WHEN T0."dType" = 'S' THEN 'Professional'
@@ -136,7 +136,7 @@ ORDER BY "TipoLicencia", "Categoria_Actividad";
 
 
 -- =============================================================================
--- 4. TOP USUARIOS POR USO (sesiones en los últimos 30 días)
+-- 4. TOP USUARIOS POR USO (sesiones en los ├║ltimos 30 d├¡as)
 -- =============================================================================
 SELECT
     T0."USER_CODE"                      AS "CodigoUsuario",
@@ -165,8 +165,8 @@ ORDER BY T1."Sesiones30Dias" DESC;
 
 
 -- =============================================================================
--- 5. LICENCIAS SIN USO (candidatas a reasignación)
--- Usuarios activos (no bloqueados) que no han ingresado en más de 90 días
+-- 5. LICENCIAS SIN USO (candidatas a reasignaci├│n)
+-- Usuarios activos (no bloqueados) que no han ingresado en m├ís de 90 d├¡as
 -- =============================================================================
 SELECT
     T0."USER_CODE"                      AS "CodigoUsuario",
