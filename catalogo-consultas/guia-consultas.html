@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo de Consultas SQL — Empaqplast</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c1222;
+      --bg-card: #141c2f;
+      --bg-hover: #1a2540;
+      --border: #243052;
+      --text: #e8edf7;
+      --text-muted: #8b9cb8;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59,130,246,.15);
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --purple: #a855f7;
+      --rose: #f43f5e;
+      --cyan: #06b6d4;
+      --sidebar-w: 280px;
+      --radius: 10px;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+    .layout { display: flex; min-height: 100vh; }
+    aside {
+      width: var(--sidebar-w);
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 1.25rem;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: .25rem;
+      letter-spacing: -.02em;
+    }
+    .logo span { color: var(--accent); }
+    .subtitle { font-size: .78rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+    .nav-group { margin-bottom: 1rem; }
+    .nav-label {
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      margin-bottom: .4rem;
+      padding-left: .5rem;
+    }
+    .nav-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: .45rem .65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font: inherit;
+      font-size: .88rem;
+      transition: all .15s;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+    .nav-btn.active { font-weight: 600; color: var(--accent); }
+    main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 2rem 2.5rem 4rem;
+      max-width: 1200px;
+    }
+    h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -.03em; margin-bottom: .35rem; }
+    .lead { color: var(--text-muted); margin-bottom: 1.75rem; max-width: 680px; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+    .search {
+      flex: 1;
+      min-width: 220px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .6rem 1rem;
+      color: var(--text);
+      font: inherit;
+      outline: none;
+    }
+    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .filter-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: .35rem .75rem;
+      border-radius: 999px;
+      font-size: .8rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-chip:hover, .filter-chip.on {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: .75rem;
+      margin-bottom: 2rem;
+    }
+    .stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .stat-n { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+    .stat-l { font-size: .75rem; color: var(--text-muted); }
+    section { margin-bottom: 2.5rem; scroll-margin-top: 1rem; }
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: .5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    h2 .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .cards { display: grid; gap: .75rem; }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      transition: border-color .15s, transform .15s;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .card.hidden { display: none; }
+    .card-top { display: flex; flex-wrap: wrap; gap: .4rem; align-items: flex-start; justify-content: space-between; margin-bottom: .5rem; }
+    .card-title { font-weight: 600; font-size: .95rem; }
+    .card-path {
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--text-muted);
+      word-break: break-all;
+      margin-bottom: .45rem;
+    }
+    .card-desc { font-size: .85rem; color: var(--text-muted); }
+    .tags { display: flex; flex-wrap: wrap; gap: .3rem; }
+    .tag {
+      font-size: .68rem;
+      padding: .15rem .5rem;
+      border-radius: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .tag-hana { background: rgba(168,85,247,.2); color: #c084fc; }
+    .tag-sqlserver { background: rgba(59,130,246,.2); color: #60a5fa; }
+    .tag-postgres { background: rgba(6,182,212,.2); color: #22d3ee; }
+    .tag-python { background: rgba(34,197,94,.2); color: #4ade80; }
+    .tag-vista { background: rgba(245,158,11,.15); color: #fbbf24; }
+    .tag-alerta { background: rgba(244,63,94,.15); color: #fb7185; }
+    .tag-sp { background: rgba(139,156,184,.2); color: #94a3b8; }
+    .tag-reporte { background: rgba(59,130,246,.12); color: #93c5fd; }
+    .tag-etl { background: rgba(34,197,94,.12); color: #86efac; }
+    .arch-diagram {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      font-family: var(--mono);
+      font-size: .72rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      overflow-x: auto;
+      white-space: pre;
+      margin-bottom: 1.5rem;
+    }
+    .callout {
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      padding: .85rem 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: .88rem;
+      margin-bottom: 1.5rem;
+    }
+    .callout strong { color: var(--accent); }
+    .skill-box {
+      background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(168,85,247,.08));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      margin-bottom: 1.5rem;
+    }
+    .skill-box h3 { font-size: .95rem; margin-bottom: .5rem; }
+    .skill-box code {
+      font-family: var(--mono);
+      font-size: .78rem;
+      background: var(--bg);
+      padding: .15rem .4rem;
+      border-radius: 4px;
+    }
+    .empty { text-align: center; padding: 3rem; color: var(--text-muted); }
+    @media (max-width: 768px) {
+      aside { display: none; }
+      main { margin-left: 0; padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="logo">Consultas <span>SQL</span></div>
+    <div class="subtitle">Empaqplast · Catálogo estratégico</div>
+    <div class="nav-group">
+      <div class="nav-label">Navegación</div>
+      <button class="nav-btn active" data-section="inicio">Inicio</button>
+      <button class="nav-btn" data-section="arquitectura">Arquitectura</button>
+      <button class="nav-btn" data-section="pedidos">Pedidos activos</button>
+      <button class="nav-btn" data-section="hana">SAP B1 / HANA</button>
+      <button class="nav-btn" data-section="sqlserver">SQL Server</button>
+      <button class="nav-btn" data-section="postgres">PostgreSQL</button>
+      <button class="nav-btn" data-section="python">Automatización</button>
+      <button class="nav-btn" data-section="carpetas">Por carpeta</button>
+      <button class="nav-btn" data-section="skills">Agent Skills</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Filtro rápido</div>
+      <button class="nav-btn filter-nav" data-filter="vista">Vistas SB1_VIEW_*</button>
+      <button class="nav-btn filter-nav" data-filter="alerta">Alertas correo</button>
+      <button class="nav-btn filter-nav" data-filter="powerbi">Power BI</button>
+    </div>
+  </aside>
+
+  <main>
+    <section id="inicio">
+      <h1>Catálogo de Consultas SQL</h1>
+      <p class="lead">Inventario estratégico de consultas, vistas y automatizaciones sobre SAP B1 (HANA), SQL Server, PostgreSQL y Python. Organizado por sistema → dominio → tipo.</p>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="toolbar">
+        <input type="search" class="search" id="search" placeholder="Buscar por nombre, ruta, dominio o palabra clave…">
+        <button class="filter-chip on" data-sys="all">Todos</button>
+        <button class="filter-chip" data-sys="hana">HANA</button>
+        <button class="filter-chip" data-sys="sqlserver">SQL Server</button>
+        <button class="filter-chip" data-sys="postgres">PostgreSQL</button>
+        <button class="filter-chip" data-sys="python">Python</button>
+      </div>
+
+      <div class="callout">
+        <strong>Organización:</strong> cada pedido vive en su carpeta kebab-case en la raíz del repo.
+        <strong>28 carpetas</strong>, sin scripts sueltos ni carpeta <code>Scripts/</code>.
+      </div>
+    </section>
+
+    <section id="arquitectura">
+      <h2><span class="dot" style="background:var(--cyan)"></span> Arquitectura de datos</h2>
+      <div class="arch-diagram">┌─────────────────────────────────────────────────────────────────────────┐
+│                        SAP B1 — HANA (EMPAQPLAST_PROD)                  │
+│  Vistas SB1_VIEW_*  │  Transaction Notifications  │  Reportes ad hoc   │
+└──────────────┬──────────────────────────────┬───────────────────────────┘
+               │ OPENQUERY (HANAODBC)         │ Consulta directa MCP
+               ▼                              ▼
+┌──────────────────────────┐    ┌──────────────────────────────────────────┐
+│ SQL Server — AlertasB1   │    │ SQL Server — TimeControl + OnlyControl   │
+│ Vistas puente → Python   │    │ Asistencia, atrasos, permisos, Power BI  │
+└──────────────┬───────────┘    └──────────────────────────────────────────┘
+               │ sqlcmd + xlsx + SMTP
+               ▼
+        📧 Alertas por correo
+
+┌──────────────────────────┐    ┌──────────────────────────────────────────┐
+│ PostgreSQL               │    │ Python / n8n                             │
+│ Auth, NPS, BI local      │    │ Pricing, stock crítico, pallets          │
+└──────────────────────────┘    └──────────────────────────────────────────┘</div>
+    </section>
+
+    <section id="pedidos">
+      <h2><span class="dot" style="background:var(--green)"></span> Pedidos activos (carpetas raíz)</h2>
+      <div class="cards" id="cards-pedidos"></div>
+    </section>
+
+    <section id="hana">
+      <h2><span class="dot" style="background:var(--purple)"></span> SAP B1 / HANA — por dominio</h2>
+      <div class="cards" id="cards-hana"></div>
+    </section>
+
+    <section id="sqlserver">
+      <h2><span class="dot" style="background:var(--accent)"></span> SQL Server</h2>
+      <div class="cards" id="cards-sqlserver"></div>
+    </section>
+
+    <section id="postgres">
+      <h2><span class="dot" style="background:var(--cyan)"></span> PostgreSQL</h2>
+      <div class="cards" id="cards-postgres"></div>
+    </section>
+
+    <section id="python">
+      <h2><span class="dot" style="background:var(--green)"></span> Automatización Python</h2>
+      <div class="cards" id="cards-python"></div>
+    </section>
+
+    <section id="carpetas">
+      <h2><span class="dot" style="background:var(--amber)"></span> Índice por carpeta</h2>
+      <div class="cards" id="cards-carpetas"></div>
+    </section>
+
+    <section id="skills">
+      <h2><span class="dot" style="background:var(--rose)"></span> Agent Skills (.agents)</h2>
+      <div class="skill-box">
+        <h3>consultas-sql-empaqplast</h3>
+        <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:.5rem">Skill principal para escribir, revisar y desplegar consultas. Incluye convenciones HANA, OPENQUERY, flujo de alertas y checklist de verificación.</p>
+        <code>~/.agents/skills/consultas-sql-empaqplast/SKILL.md</code>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">referencias/sap-b1-hana.md</div>
+          <div class="card-desc">Tablas B1 por dominio, UDFs Empaqplast, vistas SB1_VIEW_* existentes, Transaction Notifications.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">referencias/sqlserver-patrones.md</div>
+          <div class="card-desc">TimeControl, OnlyControl, AlertasB1 OPENQUERY, Power BI, ETL incremental, Python+sqlcmd.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">referencias/flujo-trabajo.md</div>
+          <div class="card-desc">Organización del repo, cadena de alertas, decisión de motor, scripts pendientes de migrar.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="empty" id="no-results" style="display:none">Sin resultados para la búsqueda actual.</div>
+  </main>
+</div>
+
+<script>
+const CATALOG = [
+  // ── Alertas y pedidos principales ──
+  { section:'pedidos', sys:'hana', domain:'Compras', tags:['vista','alerta','hana'], title:'SB1_VIEW_ORDENES_COMPRA', path:'ordenes-compra-sap-b1/SB1_VIEW_ORDENES_COMPRA.sql', desc:'OC abiertas serie OCNAC.' },
+  { section:'pedidos', sys:'sqlserver', domain:'Compras', tags:['alerta','sqlserver'], title:'ORDENES_COMPRA (AlertasB1)', path:'ordenes-compra-sap-b1/AlertasB1_ORDENES_COMPRA_linked_server.sql', desc:'Vista puente OPENQUERY HANAODBC.' },
+  { section:'pedidos', sys:'python', domain:'Compras', tags:['alerta','python'], title:'NotificacionOrdenesCompra.py', path:'ordenes-compra-sap-b1/NotificacionOrdenesCompra.py', desc:'Alerta correo sqlcmd → xlsx → SMTP.' },
+  { section:'pedidos', sys:'hana', domain:'Logística', tags:['reporte','hana'], title:'Traslado vs Salida', path:'traslado-vs-salida-mercancia/traslado_vs_salida_promedio_ponderado.sql', desc:'Promedio ponderado y asiento contable.' },
+  { section:'pedidos', sys:'hana', domain:'Cartera', tags:['vista','hana'], title:'SB1_VIEW_STATUS_RETENCION_CARTERA', path:'status-retencion-cartera/SB1_VIEW_STATUS_RETENCION_CARTERA.sql', desc:'Retenciones EMPAQPLAST::STATUSRETENCION.' },
+  { section:'pedidos', sys:'hana', domain:'Ventas', tags:['reporte','hana','python'], title:'extraer-facturas-pricing.sql', path:'facturas-pricing-revenueos/extraer-facturas-pricing.sql', desc:'OINV/INV1 para plantilla RevenueOS.' },
+  { section:'pedidos', sys:'python', domain:'Ventas', tags:['python','etl'], title:'llenar_plantilla_pricing.py', path:'facturas-pricing-revenueos/llenar_plantilla_pricing.py', desc:'Clasificación ABC y Excel.' },
+
+  // ── HANA ──
+  { section:'hana', sys:'hana', domain:'Cartera', tags:['reporte','hana'], title:'Clientes con Bloqueo', path:'cartera-sap-b1/Reporte Lista de Clientes con Bloqueo.sql', desc:'Listado clientes bloqueados.' },
+  { section:'hana', sys:'hana', domain:'Cartera', tags:['reporte','hana'], title:'Facturas vencidas excedente', path:'cartera-sap-b1/Reporte Lista de Clientes con Facturas vencidas con excedente.sql', desc:'Cartera vencida con excedente.' },
+  { section:'hana', sys:'hana', domain:'Cartera', tags:['sp','hana'], title:'SP Bloqueo Cartera', path:'cartera-sap-b1/SP Bloqueo Cartera.sql', desc:'Transaction Notification ORDR.' },
+  { section:'hana', sys:'hana', domain:'Inventario', tags:['vista','hana'], title:'SB1_VIEW_REVISION_STOCK_V2', path:'inventario-revision-stock/SB1_VIEW_REVISION_STOCK_V2.sql', desc:'Revisión stock con tránsito y precios OC.' },
+  { section:'hana', sys:'hana', domain:'Inventario', tags:['vista','hana'], title:'Analisis Stock V2 (ALTER)', path:'inventario-revision-stock/Analisis Stock V2.sql', desc:'Copia despliegue ALTER VIEW.' },
+  { section:'hana', sys:'hana', domain:'Inventario', tags:['vista','hana'], title:'SB1_VIEW_UBICACIONES_UPC', path:'inventario-ubicaciones-upc/SB1_VIEW_UBICACIONES_UPC.sql', desc:'Ubicaciones UPC bodegas.' },
+  { section:'hana', sys:'hana', domain:'Inventario', tags:['reporte','hana'], title:'Entrada mercancías OT', path:'inventario-entrada-mercancias-ot/reporte_entrada_mercancias_ot.sql', desc:'Entradas ligadas a OT.' },
+  { section:'hana', sys:'hana', domain:'Producción', tags:['reporte','hana'], title:'Stock UIO/GYE', path:'produccion-inventario-plantas/stock_actual_bodega_uio_gye.sql', desc:'Stock por bodega plantas.' },
+  { section:'hana', sys:'hana', domain:'Producción', tags:['reporte','hana'], title:'Resumen inventario UIO/GYE', path:'produccion-inventario-plantas/resumen_inventario_uio_gye.sql', desc:'Resumen consolidado plantas.' },
+  { section:'hana', sys:'hana', domain:'Producción', tags:['reporte','hana'], title:'Movimientos entrega PT', path:'produccion-inventario-plantas/reporte_movimientos_entrega_pt_em.sql', desc:'Entrega producto terminado.' },
+  { section:'hana', sys:'hana', domain:'Producción', tags:['vista','hana'], title:'alter_view_prod_transformados', path:'produccion-transformados/alter_view_prod_transformados.sql', desc:'Vista transformados.' },
+  { section:'hana', sys:'hana', domain:'Producción', tags:['reporte','hana'], title:'kg transformados eficiencia', path:'produccion-transformados/kg_transformados_eficiencia_energetica.sql', desc:'Kg para eficiencia energética.' },
+  { section:'hana', sys:'hana', domain:'Moldes', tags:['vista','hana'], title:'create_view_analisis_moldes', path:'analisis-moldes/create_view_analisis_moldes.sql', desc:'Vista análisis moldes.' },
+  { section:'hana', sys:'hana', domain:'Moldes', tags:['reporte','hana'], title:'fact_analisis_moldes', path:'analisis-moldes/fact_analisis_moldes.sql', desc:'Hechos moldes (actual).' },
+  { section:'hana', sys:'hana', domain:'Moldes', tags:['reporte','hana'], title:'validacion_ciclo_real_2026', path:'analisis-moldes/validacion_ciclo_real_2026.sql', desc:'Validación ciclo real 2026.' },
+  { section:'hana', sys:'hana', domain:'Supply', tags:['vista','hana','alerta'], title:'create_view_reporte_stock_critico', path:'stock-critico-clientes/create_view_reporte_stock_critico.sql', desc:'Vista stock crítico HANA.' },
+  { section:'hana', sys:'hana', domain:'Supply', tags:['reporte','hana'], title:'reporte_stock_critico', path:'stock-critico-clientes/reporte_stock_critico.sql', desc:'Consulta stock crítico.' },
+  { section:'hana', sys:'hana', domain:'Eficiencia', tags:['reporte','hana'], title:'reporte_combustible', path:'eficiencia-energetica-combustible/reporte_combustible.sql', desc:'Consumo combustible.' },
+  { section:'hana', sys:'hana', domain:'Admin', tags:['reporte','hana'], title:'sap_b1_vistas_clasificacion', path:'admin-sap-b1/sap_b1_vistas_clasificacion.sql', desc:'Inventario vistas B1.' },
+  { section:'hana', sys:'hana', domain:'Admin', tags:['reporte','hana'], title:'sap_b1_licencias_usuarios', path:'admin-sap-b1/sap_b1_licencias_usuarios.sql', desc:'Licencias usuarios SAP.' },
+  { section:'hana', sys:'hana', domain:'Admin', tags:['reporte','hana'], title:'sap_b1_query_manager_reportes', path:'admin-sap-b1/sap_b1_query_manager_reportes.sql', desc:'Query Manager reportes.' },
+  { section:'hana', sys:'hana', domain:'IA', tags:['reporte','hana'], title:'creacion_usuario_ia_bdd', path:'usuario-ia-bdd/creacion_usuario_ia_bdd.sql', desc:'Usuario BD proyectos IA.' },
+  { section:'hana', sys:'hana', domain:'Logística', tags:['reporte','hana'], title:'Reporte Pallets', path:'reporte-pallets-automatizacion/Reporte Pallets.sql', desc:'ODLN+OWTR flujo n8n pallets.' },
+  { section:'hana', sys:'hana', domain:'Validación', tags:['sp','hana'], title:'SPTNLVS TransactionNotification', path:'sp-transaction-notification-lvs/SPTNLVS06072026.sql', desc:'SP Transaction Notification LVS.' },
+  { section:'hana', sys:'hana', domain:'Ops', tags:['reporte','hana'], title:'diagnostico_conexiones_hana', path:'hana-diagnostico-conexiones/diagnostico_conexiones_hana.sql', desc:'SYS.M_CONNECTIONS diagnóstico.' },
+
+  // ── SQL Server ──
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['vista','sqlserver','powerbi'], title:'vm_atrasos_vista_completa', path:'vm-atrasos-tcontrol/vm_atrasos_vista_completa.sql', desc:'Vista integral atrasos y faltas.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['vista','sqlserver'], title:'vm_atrasos_v2_mejorada', path:'vm-atrasos-tcontrol/vm_atrasos_v2_mejorada.sql', desc:'Versión mejorada vm_atrasos.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'vm_atrasos_analisis_mejoras', path:'vm-atrasos-tcontrol/vm_atrasos_analisis_mejoras.sql', desc:'Análisis mejoras vm_atrasos.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'alter_vm_atrasos_cuadro_horarios', path:'vm-atrasos-tcontrol/alter_vm_atrasos_cuadro_horarios.sql', desc:'Ajuste cuadro horarios.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'create_festivos_ecuador_2026', path:'vm-atrasos-tcontrol/create_festivos_ecuador_2026.sql', desc:'Festivos Ecuador 2026.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver','powerbi'], title:'powerbi_dashboard_queries', path:'dashboard-rrhh-powerbi/powerbi_dashboard_queries.sql', desc:'25 consultas dashboard RRHH.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver','powerbi'], title:'powerbi_vm_atrasos_queries', path:'dashboard-rrhh-powerbi/powerbi_vm_atrasos_queries.sql', desc:'Consultas Power BI vm_atrasos.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'tcontrol_asistencia_empleados', path:'tcontrol-asistencia-turnos/tcontrol_asistencia_empleados.sql', desc:'Asistencia por empleado.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'tcontrol_cumplimiento_turnos_planta', path:'tcontrol-asistencia-turnos/tcontrol_cumplimiento_turnos_planta.sql', desc:'Cumplimiento turnos planta.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['sp','sqlserver'], title:'sp_codigo_empleado', path:'tcontrol-asistencia-turnos/sp_codigo_empleado.sql', desc:'SP código empleado.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'Permisos con Paga', path:'permisos-con-paga-tcontrol/Reporte de Permisos con Paga.sql', desc:'Permisos período 21-20.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'catalogo_tipos_permiso', path:'permisos-con-paga-tcontrol/catalogo_tipos_permiso.sql', desc:'Catálogo tipos permiso CD_PAGADO.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver'], title:'correccion_permiso_sin_paga', path:'permisos-con-paga-tcontrol/correccion_permiso_sin_paga.sql', desc:'Corrección E_FPAG permisos sin paga.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'Supply', tags:['sp','sqlserver'], title:'sp_stock_critico_clientes', path:'stock-critico-clientes/sp_stock_critico_clientes.sql', desc:'SP stock crítico SQL Server.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'ETL', tags:['etl','sqlserver'], title:'Proceso de carga Rotacion', path:'carga-rotacion-etl/Proceso de carga Rotacion.sql', desc:'Carga incremental upsert.' },
+  { section:'sqlserver', sys:'sqlserver', domain:'Ops', tags:['reporte','sqlserver'], title:'backups_manual', path:'backups-sqlserver/backups_manual.sql', desc:'Scripts backup manual.' },
+
+  // ── PostgreSQL ──
+  { section:'postgres', sys:'postgres', domain:'Infra', tags:['reporte','postgres'], title:'Crear Base de datos', path:'postgres-app-empaqplast/Crear Base de datos en postgres.sql', desc:'DDL creación BD.' },
+  { section:'postgres', sys:'postgres', domain:'Auth', tags:['reporte','postgres'], title:'AutenticaciónNuevo', path:'postgres-app-empaqplast/AutenticaciónNuevo.sql', desc:'Permisos y menús auth app.' },
+  { section:'postgres', sys:'postgres', domain:'NPS', tags:['reporte','postgres'], title:'Conf Nps', path:'nps-campana-semestral/Conf Nps.sql', desc:'Campaña NPS semestral.' },
+
+  // ── Python ──
+  { section:'python', sys:'python', domain:'Supply', tags:['alerta','python'], title:'reporte_stock_critico.py', path:'stock-critico-clientes/reporte_stock_critico.py', desc:'Alerta stock crítico.' },
+];
+
+const FOLDERS = [
+  { name:'ordenes-compra-sap-b1', motor:'HANA + SQL Server + Python', files:3, desc:'OC abiertas OCNAC, alerta correo.' },
+  { name:'traslado-vs-salida-mercancia', motor:'HANA', files:1, desc:'Traslado vs salida con promedio ponderado.' },
+  { name:'status-retencion-cartera', motor:'HANA', files:1, desc:'Vista retenciones cartera.' },
+  { name:'facturas-pricing-revenueos', motor:'HANA + Python', files:2, desc:'Pricing RevenueOS desde facturas.' },
+  { name:'cartera-sap-b1', motor:'HANA', files:3, desc:'Bloqueos, vencidas, SP Transaction Notification.' },
+  { name:'inventario-revision-stock', motor:'HANA', files:2, desc:'SB1_VIEW_REVISION_STOCK_V2.' },
+  { name:'inventario-ubicaciones-upc', motor:'HANA', files:1, desc:'Ubicaciones UPC.' },
+  { name:'inventario-entrada-mercancias-ot', motor:'HANA', files:1, desc:'Entradas mercancía OT.' },
+  { name:'produccion-inventario-plantas', motor:'HANA', files:3, desc:'Stock y movimientos UIO/GYE.' },
+  { name:'produccion-transformados', motor:'HANA', files:2, desc:'Transformados y eficiencia energética.' },
+  { name:'analisis-moldes', motor:'HANA', files:5, desc:'Vista, hechos y validación moldes.' },
+  { name:'stock-critico-clientes', motor:'HANA + SQL Server + Python', files:4, desc:'Vista, SP, reporte y alerta.' },
+  { name:'eficiencia-energetica-combustible', motor:'HANA', files:1, desc:'Reporte combustible.' },
+  { name:'admin-sap-b1', motor:'HANA', files:3, desc:'Vistas, licencias, Query Manager.' },
+  { name:'usuario-ia-bdd', motor:'HANA', files:1, desc:'Usuario BD IA.' },
+  { name:'reporte-pallets-automatizacion', motor:'HANA', files:1, desc:'Pallets ODLN/OWTR n8n.' },
+  { name:'sp-transaction-notification-lvs', motor:'HANA', files:1, desc:'SP Transaction Notification LVS.' },
+  { name:'hana-diagnostico-conexiones', motor:'HANA', files:1, desc:'Diagnóstico conexiones SYS.' },
+  { name:'vm-atrasos-tcontrol', motor:'SQL Server', files:6, desc:'Vista vm_atrasos y derivados.' },
+  { name:'dashboard-rrhh-powerbi', motor:'SQL Server', files:4, desc:'Consultas y docs Power BI RRHH.' },
+  { name:'tcontrol-asistencia-turnos', motor:'SQL Server', files:3, desc:'Asistencia, turnos, SP empleado.' },
+  { name:'permisos-con-paga-tcontrol', motor:'SQL Server', files:3, desc:'Permisos con/sin paga TimeControl.' },
+  { name:'carga-rotacion-etl', motor:'SQL Server', files:1, desc:'ETL rotación incremental.' },
+  { name:'backups-sqlserver', motor:'SQL Server', files:1, desc:'Backups manuales.' },
+  { name:'postgres-app-empaqplast', motor:'PostgreSQL', files:2, desc:'Auth app y DDL infra.' },
+  { name:'nps-campana-semestral', motor:'PostgreSQL', files:1, desc:'Campañas NPS semestrales.' },
+  { name:'activos-fracttal', motor:'Fracttal', files:1, desc:'Estadísticas activos exportados.' },
+  { name:'catalogo-consultas', motor:'Docs', files:1, desc:'Esta guía HTML.' },
+];
+
+const SYS_LABEL = { hana:'HANA', sqlserver:'SQL Server', postgres:'PostgreSQL', python:'Python' };
+
+function renderCard(item) {
+  const tagHtml = item.tags.map(t => `<span class="tag tag-${t}">${t}</span>`).join('');
+  return `<div class="card" data-sys="${item.sys}" data-tags="${item.tags.join(' ')}" data-search="${(item.title+' '+item.path+' '+item.domain+' '+item.desc).toLowerCase()}">
+    <div class="card-top"><span class="card-title">${item.title}</span><div class="tags">${tagHtml}</div></div>
+    <div class="card-path">${item.path}</div>
+    <div class="card-desc"><strong>${item.domain}</strong> · ${item.desc}</div>
+  </div>`;
+}
+
+function renderSections() {
+  ['pedidos','hana','sqlserver','postgres','python'].forEach(s => {
+    const el = document.getElementById('cards-'+s);
+    if (el) el.innerHTML = CATALOG.filter(c => c.section === s).map(renderCard).join('');
+  });
+  const foldersEl = document.getElementById('cards-carpetas');
+  if (foldersEl) foldersEl.innerHTML = FOLDERS.map(f => `
+    <div class="card" data-sys="all" data-tags="" data-search="${(f.name+' '+f.motor+' '+f.desc).toLowerCase()}">
+      <div class="card-top"><span class="card-title">${f.name}/</span><span class="tag tag-reporte">${f.files} archivos</span></div>
+      <div class="card-desc"><strong>${f.motor}</strong> · ${f.desc}</div>
+    </div>`).join('');
+  document.getElementById('stats').innerHTML = [
+    ['sql', CATALOG.filter(c=>c.path.endsWith('.sql')).length, 'Archivos .sql'],
+    ['carpetas', FOLDERS.length, 'Carpetas'],
+    ['vistas', CATALOG.filter(c=>c.tags.includes('vista')).length, 'Vistas'],
+    ['alertas', CATALOG.filter(c=>c.tags.includes('alerta')).length, 'Alertas'],
+  ].map(([_,n,l]) => `<div class="stat"><div class="stat-n">${n}</div><div class="stat-l">${l}</div></div>`).join('');
+}
+
+function applyFilters() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const sys = document.querySelector('.filter-chip.on')?.dataset.sys || 'all';
+  const tagFilter = document.body.dataset.tagFilter || '';
+  let visible = 0;
+  document.querySelectorAll('.card').forEach(card => {
+    const matchSearch = !q || card.dataset.search.includes(q);
+    const matchSys = sys === 'all' || card.dataset.sys === sys;
+    const matchTag = !tagFilter || card.dataset.tags.includes(tagFilter);
+    const show = matchSearch && matchSys && matchTag;
+    card.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+  document.getElementById('no-results').style.display = visible ? 'none' : 'block';
+}
+
+document.getElementById('search').addEventListener('input', applyFilters);
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('on'));
+    chip.classList.add('on');
+    applyFilters();
+  });
+});
+document.querySelectorAll('.nav-btn[data-section]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn[data-section]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.section)?.scrollIntoView({ behavior:'smooth' });
+  });
+});
+document.querySelectorAll('.filter-nav').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.body.dataset.tagFilter = btn.dataset.filter;
+    document.getElementById('search').value = '';
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('on'));
+    document.querySelector('.filter-chip[data-sys="all"]').classList.add('on');
+    applyFilters();
+    document.getElementById('inicio').scrollIntoView({ behavior:'smooth' });
+  });
+});
+
+renderSections();
+applyFilters();
+</script>
+</body>
+</html>

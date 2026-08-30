@@ -1,0 +1,7 @@
+.env
+*.env.local
+__pycache__/
+*.pyc
+.claude/settings.local.json
+*.tmp
+stats_out.txt
