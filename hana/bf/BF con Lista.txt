@@ -1,0 +1,2 @@
+Select T0."U_SYP_PESRET" From OCRD T0 Where T0."CardCode" = $[OPCH."CardCode"]
+Select T."CODE" AS "CODIGO" , T."NAME" AS "NOMBRE" From ( Select "U_SYP_PAISPAGOGEN" AS "CODE", 'PREDETERMINADO' AS "NAME", '1' AS "ORDEN"  From OCRD Where "CardCode" = $[OPCH."CardCode"] Union Select "Code", "Name", '2' "ORDEN" From "@SYP_PAISEFECEXP") T Order By "ORDEN" Asc
