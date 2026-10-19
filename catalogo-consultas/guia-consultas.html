@@ -402,6 +402,9 @@ const CATALOG = [
   { section:'hana', sys:'hana', domain:'IA', tags:['reporte','hana'], title:'creacion_usuario_ia_bdd', path:'hana/ia/creacion_usuario_ia_bdd.sql', desc:'Usuario BD IA.' },
   { section:'hana', sys:'hana', domain:'Ops', tags:['reporte','hana'], title:'diagnostico_conexiones_hana', path:'hana/ops/diagnostico_conexiones_hana.sql', desc:'SYS.M_CONNECTIONS.' },
   { section:'hana', sys:'hana', domain:'Validación', tags:['sp','hana'], title:'SPTNLVS', path:'hana/validaciones/SPTNLVS06072026.sql', desc:'Transaction Notification LVS.' },
+  { section:'hana', sys:'hana', domain:'Ventas', tags:['vista','hana','powerbi'], title:'SB1_VIEW_NC_CABECERA', path:'hana/ventas/notas-credito/SB1_VIEW_NC_CABECERA.sql', desc:'Cabecera de NC vigentes. Montos positivos. DocTotal se suma aquí.' },
+  { section:'hana', sys:'hana', domain:'Ventas', tags:['vista','hana','powerbi'], title:'SB1_VIEW_NC_DETALLE', path:'hana/ventas/notas-credito/SB1_VIEW_NC_DETALLE.sql', desc:'Línea de NC, incluidas las que la vista de ventas descarta (cuentas no 41).' },
+  { section:'hana', sys:'hana', domain:'Ventas', tags:['reporte','hana','powerbi'], title:'Notas de crédito BI', path:'hana/ventas/notas-credito/README.md', desc:'Relación Power BI, clases, motivo y corte contra la vista de ventas.' },
 
   { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['vista','sqlserver','powerbi'], title:'vm_atrasos_vista_completa', path:'sqlserver/rrhh/vm_atrasos_vista_completa.sql', desc:'Vista atrasos.' },
   { section:'sqlserver', sys:'sqlserver', domain:'RRHH', tags:['reporte','sqlserver','powerbi'], title:'powerbi_dashboard_queries', path:'sqlserver/rrhh/powerbi_dashboard_queries.sql', desc:'Dashboard RRHH.' },
@@ -421,7 +424,7 @@ const FOLDERS = [
   { name:'hana/produccion', motor:'HANA', files:10, desc:'Plantas, transformados, moldes.' },
   { name:'hana/supply', motor:'HANA', files:2, desc:'Stock crítico vistas.' },
   { name:'hana/logistica', motor:'HANA', files:2, desc:'Traslados y pallets.' },
-  { name:'hana/ventas', motor:'HANA', files:1, desc:'Pricing facturas.' },
+  { name:'hana/ventas', motor:'HANA', files:4, desc:'Pricing y notas de crédito BI.' },
   { name:'hana/eficiencia-energetica', motor:'HANA', files:1, desc:'Combustible.' },
   { name:'hana/ia', motor:'HANA', files:1, desc:'Usuario IA.' },
   { name:'hana/ops', motor:'HANA', files:1, desc:'Diagnóstico conexiones.' },

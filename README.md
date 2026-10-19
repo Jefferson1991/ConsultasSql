@@ -30,7 +30,7 @@ Consultas con SQL/
 | `produccion/` | Stock plantas, transformados, moldes |
 | `supply/` | Stock crítico (vistas HANA) |
 | `validaciones/` | Transaction Notifications |
-| `ventas/` | Facturas pricing |
+| `ventas/` | Facturas pricing, notas de crédito BI |
 
 ### sqlserver/
 
