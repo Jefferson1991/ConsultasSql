@@ -41,6 +41,16 @@
      produjeron esos kilos. Coincide con la de Beas en todos los moldes de 2026
      menos uno.
 
+   LAS PARADAS SE ATRIBUYEN POR OT, NO POR CULPA
+     Las columnas Par_* cuentan las paradas de BEAS_PARADAS de las OTs que ese
+     molde produjo en el año, igual que hace SB1_VIEW_ANALISIS_MOLDES. Son las
+     12 categorías reales de GRUNDID.
+     Ojo con leerlas como responsabilidad: una parada 'Planificacion' ocurrió
+     DURANTE una OT de ese molde, no la causó el molde. La que sí apunta al
+     molde es 'Par_Moldes': de las 2.200 paradas de esa categoría, 1.345 tienen
+     el código del molde en APLATZ_ID, es decir el molde como recurso parado.
+     Par_Horas_Total suma HORAS_DE_PARO de todas las categorías.
+
    CÓMO SE ENLAZA EL MOLDE CON LA PRODUCCIÓN
      SB1_VIEW_PROD_TRANSFORMADOS."Lote_Orden"  =  SB1_VIEW_BEAS_RESUMEN_OF."OT"
      y esa vista ya resuelve MOLDE_CODIGO por OT.
@@ -415,6 +425,46 @@ PRODUCCION AS (
     GROUP BY R."MOLDE_CODIGO", T."mes"
 ),
 
+/* OTs que ese molde produjo en el año: base para contar las paradas. */
+OTS_ANIO AS (
+    SELECT DISTINCT
+        R."MOLDE_CODIGO"                        AS "MOLDE",
+        R."OT"                                  AS "OT"
+    FROM "EMPAQPLAST_PROD"."SB1_VIEW_PROD_TRANSFORMADOS" T
+    INNER JOIN "EMPAQPLAST_PROD"."SB1_VIEW_BEAS_RESUMEN_OF" R
+            ON TO_VARCHAR(R."OT") = T."Lote_Orden"
+    CROSS JOIN PARAM P
+    WHERE T."anio" = P."ANIO"
+      AND R."MOLDE_CODIGO" IS NOT NULL
+      AND TRIM(R."MOLDE_CODIGO") <> ''
+),
+
+/* Paradas por molde y categoría (GRUNDID), pivoteadas. */
+PARADAS AS (
+    SELECT
+        O."MOLDE",
+        COUNT(*)                                              AS "PAR_TOTAL",
+        ROUND(SUM(P."HORAS_DE_PARO"), 2)                      AS "PAR_HORAS",
+        SUM(CASE WHEN P."GRUNDID" = 'Moldes' THEN 1 ELSE 0 END)        AS "PAR_MOLDES",
+        SUM(CASE WHEN P."GRUNDID" = 'Mantenimiento' THEN 1 ELSE 0 END) AS "PAR_MANTENIMIENTO",
+        SUM(CASE WHEN P."GRUNDID" = 'Produccion' THEN 1 ELSE 0 END)    AS "PAR_PRODUCCION",
+        SUM(CASE WHEN P."GRUNDID" = 'Planificacion' THEN 1 ELSE 0 END) AS "PAR_PLANIFICACION",
+        SUM(CASE WHEN P."GRUNDID" = 'Mecanico' THEN 1 ELSE 0 END)      AS "PAR_MECANICO",
+        SUM(CASE WHEN P."GRUNDID" = 'Electrico' THEN 1 ELSE 0 END)     AS "PAR_ELECTRICO",
+        SUM(CASE WHEN P."GRUNDID" = 'Otros' THEN 1 ELSE 0 END)         AS "PAR_OTROS",
+        SUM(CASE WHEN P."GRUNDID" = 'Calidad' THEN 1 ELSE 0 END)       AS "PAR_CALIDAD",
+        SUM(CASE WHEN P."GRUNDID" = 'Comercial' THEN 1 ELSE 0 END)     AS "PAR_COMERCIAL",
+        SUM(CASE WHEN P."GRUNDID" = 'Bodega' THEN 1 ELSE 0 END)        AS "PAR_BODEGA",
+        SUM(CASE WHEN P."GRUNDID" = 'Ausentismo' THEN 1 ELSE 0 END)    AS "PAR_AUSENTISMO",
+        SUM(CASE WHEN P."GRUNDID" = 'Soldadura' THEN 1 ELSE 0 END)     AS "PAR_SOLDADURA",
+        SUM(CASE WHEN P."GRUNDID" = 'Moldes'
+                  AND P."APLATZ_ID" = O."MOLDE" THEN 1 ELSE 0 END)   AS "PAR_MOLDE_COMO_RECURSO"
+    FROM OTS_ANIO O
+    INNER JOIN "EMPAQPLAST_PROD"."BEAS_PARADAS" P
+            ON P."OT" = O."OT"
+    GROUP BY O."MOLDE"
+),
+
 /* Kilos por molde y máquina, para resolver la máquina principal y la lista. */
 MAQ_X_MOLDE AS (
     SELECT
@@ -490,6 +540,23 @@ SELECT
     M."MAQUINAS_USADAS"                                                     AS "Maquinas_Usadas",
     ROUND(100 * M."KG_PRINCIPAL" / NULLIF(M."KG_MAQUINAS", 0), 1)           AS "Pct_Maquina_Principal",
 
+    -- Paradas por categoría (de las OTs que produjo ese año)
+    COALESCE(PA."PAR_MOLDES", 0)                                      AS "Par_Moldes",
+    COALESCE(PA."PAR_MANTENIMIENTO", 0)                               AS "Par_Mantenimiento",
+    COALESCE(PA."PAR_PRODUCCION", 0)                                  AS "Par_Produccion",
+    COALESCE(PA."PAR_PLANIFICACION", 0)                               AS "Par_Planificacion",
+    COALESCE(PA."PAR_MECANICO", 0)                                    AS "Par_Mecanico",
+    COALESCE(PA."PAR_ELECTRICO", 0)                                   AS "Par_Electrico",
+    COALESCE(PA."PAR_OTROS", 0)                                       AS "Par_Otros",
+    COALESCE(PA."PAR_CALIDAD", 0)                                     AS "Par_Calidad",
+    COALESCE(PA."PAR_COMERCIAL", 0)                                   AS "Par_Comercial",
+    COALESCE(PA."PAR_BODEGA", 0)                                      AS "Par_Bodega",
+    COALESCE(PA."PAR_AUSENTISMO", 0)                                  AS "Par_Ausentismo",
+    COALESCE(PA."PAR_SOLDADURA", 0)                                   AS "Par_Soldadura",
+    COALESCE(PA."PAR_MOLDE_COMO_RECURSO", 0)                                AS "Par_Moldes_Como_Recurso",
+    COALESCE(PA."PAR_TOTAL", 0)                                             AS "Par_Total",
+    COALESCE(PA."PAR_HORAS", 0)                                             AS "Par_Horas_Total",
+
     -- Kilogramos por mes
     ROUND(COALESCE(SUM(CASE WHEN D."MES" =  1 THEN D."KG" END), 0), 2)      AS "Kg_01_Ene",
     ROUND(COALESCE(SUM(CASE WHEN D."MES" =  2 THEN D."KG" END), 0), 2)      AS "Kg_02_Feb",
@@ -532,12 +599,15 @@ LEFT JOIN MOLDES_ACTIVO A ON A."MOLDE" = U."MOLDE"
 LEFT JOIN PRODUCCION    D ON D."MOLDE" = U."MOLDE"
 LEFT JOIN ORDENES_ANIO  O ON O."MOLDE" = U."MOLDE"
 LEFT JOIN MAQUINAS      M ON M."MOLDE" = U."MOLDE"
+LEFT JOIN PARADAS      PA ON PA."MOLDE" = U."MOLDE"
 GROUP BY
     U."MOLDE", L."MOLDE", L."COD_SAP", L."CLASE_ACTIVO",
     B."DESC_BEAS", B."AREA", B."OTS_HISTORICAS",
     A."DESC_ACTIVO", A."ACTIVO_FIJO",
     M."MAQUINA_PRINCIPAL", M."MAQUINAS_NUM", M."MAQUINAS_USADAS",
-    M."KG_PRINCIPAL", M."KG_MAQUINAS"
+    M."KG_PRINCIPAL", M."KG_MAQUINAS",
+    PA."PAR_MOLDES", PA."PAR_MANTENIMIENTO", PA."PAR_PRODUCCION", PA."PAR_PLANIFICACION", PA."PAR_MECANICO", PA."PAR_ELECTRICO", PA."PAR_OTROS", PA."PAR_CALIDAD", PA."PAR_COMERCIAL", PA."PAR_BODEGA", PA."PAR_AUSENTISMO", PA."PAR_SOLDADURA",
+    PA."PAR_MOLDE_COMO_RECURSO", PA."PAR_TOTAL", PA."PAR_HORAS"
 ORDER BY "Kg_Total_Anio" DESC, U."MOLDE";
 
 
