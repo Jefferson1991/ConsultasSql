@@ -13,14 +13,26 @@ Todo sobre SAP B1 en HANA, esquema `EMPAQPLAST_PROD`.
 | [resumen-inventario-uio-gye.sql](resumen-inventario-uio-gye.sql) | — | Réplica del informe de auditoría de stocks por sucursal: movimientos `TransType` 59 (entrada) y 60 (salida). Excluye grupos 106, 107 y 108. **Hay que ajustar `YEAR`/`MONTH` en el `WHERE` de cada CTE.** |
 | [stock-actual-bodega-uio-gye.sql](stock-actual-bodega-uio-gye.sql) | — | Saldos en tiempo real (`OITW`) más el último movimiento de entrada y salida. Mismas exclusiones de grupo. |
 
-## Dos archivos definen `SB1_VIEW_REVISION_STOCK_V2`
+## Dos archivos definen `SB1_VIEW_REVISION_STOCK_V2`, y la viva es la vieja
 
-El índice topológico lo marca en `public_surface`. Antes de ejecutar uno, confirma
-cuál coincide con la vista viva en HANA. Dato de contexto que está en la cabecera
-de `SB1_VIEW_REVISION_STOCK_V2.sql`: el 2026-06-23 se eliminó un ajuste fijo de
-`- 74250` escrito a mano solo para `MPPASO00001`, que calzaba el tránsito de un
-embarque puntual. Si la versión alterna todavía lo tiene, desplegarla reintroduce
-el error.
+Comparado contra producción el 2026-11-19: **la vista que corre en HANA es la de
+`SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql`**, es decir la que todavía lleva
+el ajuste fijo `- 74250` escrito a mano solo para `MPPASO00001`.
+
+```
+OITW · MPPASO00001 · UIO_IMPT   OnHand 0 + OnOrder 767.250 = 767.250
+Vista viva · Transito_kg                                   = 693.000
+```
+
+La corrección que la cabecera de `SB1_VIEW_REVISION_STOCK_V2.sql` da por hecha el
+2026-06-23 **nunca se desplegó**. Mientras siga así, para ese artículo
+`Transito_kg`, `Stock_Neto_kg`, `Dias_Stock_Neto` y las columnas de costo quedan
+subestimadas en 74.250 kg.
+
+Las dos definiciones declaran las mismas 53 columnas en el mismo orden, así que la
+estructura no las distingue: solo el dato.
+
+Evidencia completa y decisión pendiente: [docs/domain/stock-definiciones-vigentes.md](../../domain/stock-definiciones-vigentes.md).
 
 Los dos reportes de auditoría UIO/GYE estaban antes bajo `produccion/`: son
 inventario, no producción.
