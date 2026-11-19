@@ -13,6 +13,7 @@ cabecera de cada archivo.
 | [apps/](apps/) | Auth, permisos y menús de las apps; DDL de infraestructura; NPS | PostgreSQL |
 | [cartera/](cartera/) | Bloqueo de clientes, vencidas con excedente, retenciones | HANA |
 | [compras/](compras/) | **Cadena de alerta** de órdenes de compra abiertas | HANA → SQL Server → Python |
+| [contabilidad/](contabilidad/) | Conciliación bancaria: Libro Mayor contra extracto | HANA |
 | [eficiencia-energetica/](eficiencia-energetica/) | Consumo de combustibles | HANA |
 | [inventario/](inventario/) | Stock, antigüedad PT/MP, ubicaciones, datos maestros, auditoría UIO/GYE | HANA |
 | [logistica/](logistica/) | Pallets del flujo automático y traslados vs salidas | HANA |

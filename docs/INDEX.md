@@ -35,6 +35,7 @@ motor, el servidor y el orden de despliegue de cada archivo.
 | [apps/](consultas/apps/README.md) | Auth, DDL, NPS (PostgreSQL) | La configuración de NPS empieza con `TRUNCATE` |
 | [cartera/](consultas/cartera/README.md) | Bloqueos y vencidas | `DocDueDate` ya incluye el crédito |
 | [compras/](consultas/compras/README.md) | Cadena de alerta de OC | El alcance (serie OCNAC, abiertos) está en el `WHERE` de la vista de HANA |
+| [contabilidad/](consultas/contabilidad/README.md) | Conciliación bancaria | El orden de clasificación del movimiento no es cosmético |
 | [eficiencia-energetica/](consultas/eficiencia-energetica/README.md) | Combustible | La otra mitad del indicador está en `produccion/` |
 | [inventario/](consultas/inventario/README.md) | Stock, antigüedad, UPC | La vista de la base aún resta el ajuste `- 74250`; un archivo ya no |
 | [logistica/](consultas/logistica/README.md) | Pallets, traslados | El flujo lo escribe n8n con `U_EntregaRef` |

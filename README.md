@@ -47,6 +47,7 @@ Consultas con SQL/
 | `apps/` | Auth, permisos y menús, DDL de infra, NPS | PostgreSQL |
 | `cartera/` | Bloqueos, vencidas con excedente, retenciones | HANA |
 | `compras/` | Cadena de alerta de órdenes de compra | HANA → SQL Server → Python |
+| `contabilidad/` | Conciliación bancaria: Libro Mayor contra extracto | HANA |
 | `eficiencia-energetica/` | Combustible | HANA |
 | `inventario/` | Stock, antigüedad PT/MP, UPC, datos maestros, auditoría UIO/GYE | HANA |
 | `logistica/` | Pallets del flujo automático, traslados | HANA |
