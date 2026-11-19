@@ -175,6 +175,7 @@ Hechos comprobados contra producción al construir
 - **`U_EMPA_COD_RECURSO` no sirve para identificar moldes:** marca `'MOLDE'` en 212 de las 240 filas de `SB1_VIEW_ACTIVOS_FIJOS`, incluidas máquinas. La clase de activo sí discrimina: `PPE-MOLDE-10` tiene 70 activos.
 - **`SB1_VIEW_ACTIVOS_FIJOS` no es el maestro completo:** son 240 filas, todas `Estado_Activo = 'A'`. 82 códigos de molde que sí producen no están en ella, entre ellos `MOLSOP1350` (154 OTs).
 - **Producción sin molde:** en 2026, 1.445 de 3.958 órdenes de transformados (3,38 M kg de 15,15 M) no tienen OT en Beas. Son `CARNEEXT`, `IMPRES-2`, `BOBINZ-3`, `SELLA-3`, `EXTRUS-1`: extrusión, impresión, bobinado y sellado, procesos sin molde.
+- **Un molde corre en varias máquinas.** Verificado en 2026 sobre los 178 moldes que fabricaron: 106 usaron una sola máquina, 46 dos, 12 tres, 11 cuatro, 2 cinco y 1 seis. Hablar de "la máquina de un molde" solo tiene sentido mirando qué porcentaje de los kilos se hizo en la principal. La máquina se toma de `SB1_VIEW_PROD_TRANSFORMADOS."Maquina"`, que es donde se produjeron esos kilos; coincide con la de Beas en todos los moldes de 2026 menos uno.
 - **Defecto de `SB1_VIEW_ANALISIS_MOLDES`:** su `WHERE T3."Tiempo_Ciclo_Real" > 0` convierte los tres `LEFT JOIN` en `INNER`, así que un molde sin tiempos de producción desaparece de la salida. Señalado, no corregido.
 
 ### Cuántos moldes son (resuelto el 2026-11-19)

@@ -30,6 +30,17 @@
      PARA ACTUALIZARLA: regenerar el bloque desde la columna COD. FRACCTAL del
      Excel. No editar molde por molde a mano.
 
+   UN MOLDE NO USA UNA SOLA MÁQUINA
+     Verificado en 2026: de los 178 moldes que fabricaron, 106 usaron una sola
+     máquina, 46 usaron dos, 12 tres, 11 cuatro, 2 cinco y 1 seis. Por eso hay
+     cuatro columnas y no una: la máquina principal (la de más kilos del año),
+     cuántas distintas usó, la lista completa ordenada por kilos y qué porcentaje
+     del año se hizo en la principal. Si Pct_Maquina_Principal es bajo, hablar de
+     "la máquina del molde" no significa nada para ese molde.
+     La máquina sale de SB1_VIEW_PROD_TRANSFORMADOS."Maquina", que es donde se
+     produjeron esos kilos. Coincide con la de Beas en todos los moldes de 2026
+     menos uno.
+
    CÓMO SE ENLAZA EL MOLDE CON LA PRODUCCIÓN
      SB1_VIEW_PROD_TRANSFORMADOS."Lote_Orden"  =  SB1_VIEW_BEAS_RESUMEN_OF."OT"
      y esa vista ya resuelve MOLDE_CODIGO por OT.
@@ -404,6 +415,38 @@ PRODUCCION AS (
     GROUP BY R."MOLDE_CODIGO", T."mes"
 ),
 
+/* Kilos por molde y máquina, para resolver la máquina principal y la lista. */
+MAQ_X_MOLDE AS (
+    SELECT
+        R."MOLDE_CODIGO"                        AS "MOLDE",
+        T."Maquina"                             AS "MAQUINA",
+        SUM(T."kilogramos_completados")         AS "KG",
+        ROW_NUMBER() OVER (
+            PARTITION BY R."MOLDE_CODIGO"
+            ORDER BY SUM(T."kilogramos_completados") DESC, T."Maquina"
+        )                                       AS "RN"
+    FROM "EMPAQPLAST_PROD"."SB1_VIEW_PROD_TRANSFORMADOS" T
+    INNER JOIN "EMPAQPLAST_PROD"."SB1_VIEW_BEAS_RESUMEN_OF" R
+            ON TO_VARCHAR(R."OT") = T."Lote_Orden"
+    CROSS JOIN PARAM P
+    WHERE T."anio" = P."ANIO"
+      AND R."MOLDE_CODIGO" IS NOT NULL
+      AND TRIM(R."MOLDE_CODIGO") <> ''
+    GROUP BY R."MOLDE_CODIGO", T."Maquina"
+),
+
+MAQUINAS AS (
+    SELECT
+        "MOLDE",
+        COUNT(*)                                            AS "MAQUINAS_NUM",
+        STRING_AGG("MAQUINA", ' / ' ORDER BY "RN")          AS "MAQUINAS_USADAS",
+        MAX(CASE WHEN "RN" = 1 THEN "MAQUINA" END)          AS "MAQUINA_PRINCIPAL",
+        MAX(CASE WHEN "RN" = 1 THEN "KG" END)               AS "KG_PRINCIPAL",
+        SUM("KG")                                           AS "KG_MAQUINAS"
+    FROM MAQ_X_MOLDE
+    GROUP BY "MOLDE"
+),
+
 /* Órdenes del año contadas una sola vez. No es la suma de las mensuales: una
    orden que produce en enero y en febrero cuenta en los dos meses, pero es una
    sola orden en el año. */
@@ -440,6 +483,12 @@ SELECT
     END                                                                     AS "Origen_Molde",
     L."COD_SAP"                                                             AS "Cod_SAP",
     A."ACTIVO_FIJO"                                                         AS "Activo_Fijo_B1",
+
+    -- Máquina: un molde puede haber corrido en varias
+    M."MAQUINA_PRINCIPAL"                                                   AS "Maquina_Principal",
+    COALESCE(M."MAQUINAS_NUM", 0)                                           AS "Maquinas_Num",
+    M."MAQUINAS_USADAS"                                                     AS "Maquinas_Usadas",
+    ROUND(100 * M."KG_PRINCIPAL" / NULLIF(M."KG_MAQUINAS", 0), 1)           AS "Pct_Maquina_Principal",
 
     -- Kilogramos por mes
     ROUND(COALESCE(SUM(CASE WHEN D."MES" =  1 THEN D."KG" END), 0), 2)      AS "Kg_01_Ene",
@@ -482,16 +531,19 @@ LEFT JOIN MOLDES_BEAS   B ON B."MOLDE" = U."MOLDE"
 LEFT JOIN MOLDES_ACTIVO A ON A."MOLDE" = U."MOLDE"
 LEFT JOIN PRODUCCION    D ON D."MOLDE" = U."MOLDE"
 LEFT JOIN ORDENES_ANIO  O ON O."MOLDE" = U."MOLDE"
+LEFT JOIN MAQUINAS      M ON M."MOLDE" = U."MOLDE"
 GROUP BY
     U."MOLDE", L."MOLDE", L."COD_SAP", L."CLASE_ACTIVO",
     B."DESC_BEAS", B."AREA", B."OTS_HISTORICAS",
-    A."DESC_ACTIVO", A."ACTIVO_FIJO"
+    A."DESC_ACTIVO", A."ACTIVO_FIJO",
+    M."MAQUINA_PRINCIPAL", M."MAQUINAS_NUM", M."MAQUINAS_USADAS",
+    M."KG_PRINCIPAL", M."KG_MAQUINAS"
 ORDER BY "Kg_Total_Anio" DESC, U."MOLDE";
 
 
 /* =========================================================================
-   VERSIÓN LARGA (molde × mes), si se va a modelar en Power BI.
-   Una fila por molde y mes con producción; no trae los moldes en cero.
+   VERSIÓN LARGA (molde × mes × máquina), si se va a modelar en Power BI.
+   Una fila por molde, mes y máquina con producción; no trae los moldes en cero.
    =========================================================================
 
 WITH PARAM AS (SELECT 2026 AS "ANIO" FROM DUMMY)
@@ -499,6 +551,7 @@ SELECT
     P."ANIO"                                AS "Anio",
     T."mes"                                 AS "Mes",
     R."MOLDE_CODIGO"                        AS "Molde",
+    T."Maquina"                             AS "Maquina",
     MAX(R."MOLDE_DESCRIPCION")              AS "Descripcion",
     MAX(R."AREA")                           AS "Area",
     COUNT(DISTINCT T."Lote_Orden")          AS "Ordenes",
@@ -511,7 +564,7 @@ CROSS JOIN PARAM P
 WHERE T."anio" = P."ANIO"
   AND R."MOLDE_CODIGO" IS NOT NULL
   AND TRIM(R."MOLDE_CODIGO") <> ''
-GROUP BY P."ANIO", T."mes", R."MOLDE_CODIGO"
+GROUP BY P."ANIO", T."mes", R."MOLDE_CODIGO", T."Maquina"
 ORDER BY "Mes", "Kg" DESC;
 
    =========================================================================
