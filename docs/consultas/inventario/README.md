@@ -13,26 +13,25 @@ Todo sobre SAP B1 en HANA, esquema `EMPAQPLAST_PROD`.
 | [resumen-inventario-uio-gye.sql](resumen-inventario-uio-gye.sql) | — | Réplica del informe de auditoría de stocks por sucursal: movimientos `TransType` 59 (entrada) y 60 (salida). Excluye grupos 106, 107 y 108. **Hay que ajustar `YEAR`/`MONTH` en el `WHERE` de cada CTE.** |
 | [stock-actual-bodega-uio-gye.sql](stock-actual-bodega-uio-gye.sql) | — | Saldos en tiempo real (`OITW`) más el último movimiento de entrada y salida. Mismas exclusiones de grupo. |
 
-## Dos archivos definen `SB1_VIEW_REVISION_STOCK_V2`, y la viva es la vieja
+## Dos archivos para `SB1_VIEW_REVISION_STOCK_V2`: cuál describe la base
 
-Comparado contra producción el 2026-11-19: **la vista que corre en HANA es la de
-`SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql`**, es decir la que todavía lleva
-el ajuste fijo `- 74250` escrito a mano solo para `MPPASO00001`.
+Son dos versiones de la misma consulta, guardadas en momentos distintos. Ambas
+declaran las mismas 53 columnas en el mismo orden; lo que las separa es el ajuste
+fijo `- 74250` escrito a mano solo para `MPPASO00001`.
+
+Comprobado contra la base el 2026-11-19: **la vista que corre todavía resta ese
+ajuste**, así que la que la describe es `…-version-alterna.sql`.
 
 ```
 OITW · MPPASO00001 · UIO_IMPT   OnHand 0 + OnOrder 767.250 = 767.250
 Vista viva · Transito_kg                                   = 693.000
 ```
 
-La corrección que la cabecera de `SB1_VIEW_REVISION_STOCK_V2.sql` da por hecha el
-2026-06-23 **nunca se desplegó**. Mientras siga así, para ese artículo
-`Transito_kg`, `Stock_Neto_kg`, `Dias_Stock_Neto` y las columnas de costo quedan
-subestimadas en 74.250 kg.
+Si reutilizas `SB1_VIEW_REVISION_STOCK_V2.sql`, que ya no lleva el ajuste, para
+ese artículo obtendrás 74.250 kg más de tránsito que el motor, y lo mismo en
+`Stock_Neto_kg`, `Dias_Stock_Neto` y las columnas de costo.
 
-Las dos definiciones declaran las mismas 53 columnas en el mismo orden, así que la
-estructura no las distingue: solo el dato.
-
-Evidencia completa y decisión pendiente: [docs/domain/stock-definiciones-vigentes.md](../../domain/stock-definiciones-vigentes.md).
+Evidencia: [docs/domain/stock-diferencias-con-la-bdd.md](../../domain/stock-diferencias-con-la-bdd.md).
 
 Los dos reportes de auditoría UIO/GYE estaban antes bajo `produccion/`: son
 inventario, no producción.

@@ -15,7 +15,7 @@ procedimientos, decisiones) y las **consultas ejecutables**.
 | [domain/moldes.md](domain/moldes.md) | `SB1_VIEW_ANALISIS_MOLDES` y sus objetos base, con las dependencias por tabla de B1. |
 | [domain/notas-credito.md](domain/notas-credito.md) | Notas de crédito del BI de Gerencia: grano de cabecera y detalle, y por qué los montos van positivos frente a las vistas de venta. |
 | [domain/rrhh-tablero-powerbi.md](domain/rrhh-tablero-powerbi.md) | Arquitectura del tablero de RRHH: TCONTROL (biométrico) + ONLYCONTROL (maestros). |
-| [domain/stock-definiciones-vigentes.md](domain/stock-definiciones-vigentes.md) | Cuál de las dos definiciones de `SB1_VIEW_REVISION_STOCK_V2` y `SB1_VIEW_REPORTE_STOCK_CRITICO` es la que corre en HANA, con la evidencia. Verificado el 2026-11-19. |
+| [domain/stock-diferencias-con-la-bdd.md](domain/stock-diferencias-con-la-bdd.md) | En qué se apartan de la base los archivos guardados de `SB1_VIEW_REVISION_STOCK_V2` y `SB1_VIEW_REPORTE_STOCK_CRITICO`, con la evidencia. Comprobado el 2026-11-19. |
 | [runbooks/ausentismo.md](runbooks/ausentismo.md) | Qué dos scripts de ausentismo son los vigentes, en qué servidor y base corre cada uno y en qué orden. |
 | [runbooks/powerbi-rrhh-consultas-diarias.md](runbooks/powerbi-rrhh-consultas-diarias.md) | Consultas de uso diario del tablero de RRHH. |
 | [plans/2026-11-19-bootstrap-protocolo-agentes.md](plans/2026-11-19-bootstrap-protocolo-agentes.md) | Puesta en marcha del protocolo de `AGENTS.md`. Implementado. |
@@ -36,12 +36,12 @@ motor, el servidor y el orden de despliegue de cada archivo.
 | [cartera/](consultas/cartera/README.md) | Bloqueos y vencidas | `DocDueDate` ya incluye el crédito |
 | [compras/](consultas/compras/README.md) | Cadena de alerta de OC | El alcance (serie OCNAC, abiertos) está en el `WHERE` de la vista de HANA |
 | [eficiencia-energetica/](consultas/eficiencia-energetica/README.md) | Combustible | La otra mitad del indicador está en `produccion/` |
-| [inventario/](consultas/inventario/README.md) | Stock, antigüedad, UPC | La vista viva es la que aún tiene el ajuste `- 74250` |
+| [inventario/](consultas/inventario/README.md) | Stock, antigüedad, UPC | La vista de la base aún resta el ajuste `- 74250`; un archivo ya no |
 | [logistica/](consultas/logistica/README.md) | Pallets, traslados | El flujo lo escribe n8n con `U_EntregaRef` |
 | [plataforma/](consultas/plataforma/README.md) | Administración B1, ops | Contraseña en claro sin rotar en `ops/creacion-usuario-ia.sql` |
 | [produccion/](consultas/produccion/README.md) | Transformados, trazabilidad, moldes | El enlace con Beas va por `U_EMPA_COD_BEAS` |
 | [rrhh/](consultas/rrhh/README.md) | Ausentismo, atrasos, permisos | Tres servidores distintos; dos definen `vm_atrasos` |
-| [supply/](consultas/supply/README.md) | Cadena de stock crítico | Desplegar el `.sql` homónimo rompe la alerta: renombra dos columnas |
+| [supply/](consultas/supply/README.md) | Cadena de stock crítico | El archivo que describe la vista viva es `analisis-stock-critico.sql` |
 | [ventas/](consultas/ventas/README.md) | Notas de crédito, pricing | El `.py` y su `.sql` deben quedar en la misma carpeta |
 
 [catalogo/guia-consultas.html](catalogo/guia-consultas.html) es la guía

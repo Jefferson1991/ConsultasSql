@@ -18,22 +18,24 @@ reporte-stock-critico.py → Excel con semáforo + correo
 | [sp_Stock_Critico_Clientes.sql](sp_Stock_Critico_Clientes.sql) | SQL Server | `SRV-APP\SQLEXPRESS`, base `AlertasB1` | Crea el SP que arma el resultado final. Requiere la vista `STOCK_CRITICO_CLIENTES` (OPENQUERY a HANA). |
 | [reporte-stock-critico.py](reporte-stock-critico.py) | Python | donde esté programada la tarea | Ejecuta el SP por `sqlcmd`, genera el Excel con formato y semáforo, envía el correo. |
 
-## Cuidado: dos archivos definen la misma vista, y uno rompe la alerta
+## Dos archivos para la misma vista: cuál describe la base
 
-`SB1_VIEW_REPORTE_STOCK_CRITICO.sql` y `analisis-stock-critico.sql` crean ambos
-`SB1_VIEW_REPORTE_STOCK_CRITICO`.
+`SB1_VIEW_REPORTE_STOCK_CRITICO.sql` y `analisis-stock-critico.sql` son dos
+versiones de la misma consulta. Comprobado contra la base el 2026-11-19: **la que
+describe la vista viva es `analisis-stock-critico.sql`**, y es la que hay que leer
+para entender la alerta.
 
-**Comparado contra producción el 2026-11-19: la vista viva es la de
-`analisis-stock-critico.sql`.** En HANA las columnas 16 y 17 se llaman `UIO Total`
-y `GYE Total`, **con espacio**; `SB1_VIEW_REPORTE_STOCK_CRITICO.sql` las declara
-como `UIO_Total` y `GYE_Total`, con guion bajo.
+Los distingue el nombre de dos columnas. En la base, posiciones 16 y 17, llevan
+espacio: `UIO Total` y `GYE Total`. El archivo homónimo las declara `UIO_Total` y
+`GYE_Total`, con guion bajo. Las otras 21 coinciden.
 
-No es cosmético: `sp_Stock_Critico_Clientes.sql` las pide como `[UIO Total]` y
-`[GYE Total]`, y `reporte-stock-critico.py` las usa con ese nombre para armar el
-Excel. **Desplegar `SB1_VIEW_REPORTE_STOCK_CRITICO.sql` rompe el procedimiento y
-el correo**, aunque sea el archivo que lleva el nombre de la vista.
+Importa porque el resto de la cadena pide el nombre con espacio:
+`sp_Stock_Critico_Clientes.sql` selecciona `[UIO Total]` y `[GYE Total]`, y
+`reporte-stock-critico.py` arma el Excel con esas claves. Si alguna vez se
+ejecutara el archivo homónimo contra la base, el procedimiento y el correo
+dejarían de encontrar esas columnas.
 
-Detalle y evidencia: [docs/domain/stock-definiciones-vigentes.md](../../domain/stock-definiciones-vigentes.md).
+Evidencia: [docs/domain/stock-diferencias-con-la-bdd.md](../../domain/stock-diferencias-con-la-bdd.md).
 
 ## Orden de despliegue
 

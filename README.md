@@ -3,6 +3,18 @@
 Consultas, vistas y scripts de automatización sobre SAP B1 (HANA), SQL Server,
 PostgreSQL y Fracttal.
 
+## Qué es y qué no es este repositorio
+
+**Es el registro de las consultas que hemos hecho.** No es un espejo de lo que
+vive en la base de datos ni la fuente desde la que se despliega. (Jefferson,
+2026-11-19.)
+
+De ahí se sigue:
+
+- La **verdad de lo que corre** está en el motor, no aquí. Un archivo guardado puede diferir de la vista o el procedimiento con el mismo nombre, y eso no es un error del repositorio.
+- Que un archivo y el objeto vivo difieran **no implica que haya algo pendiente de desplegar**. Antes de reutilizar una consulta, verifica el esquema y el dato contra el origen.
+- Dos archivos que generan el mismo objeto son **dos versiones de una consulta guardadas en momentos distintos**, no dos candidatos compitiendo por producción.
+
 ## Organización
 
 Todo vive bajo `docs/`, en dos mitades que no se mezclan: el **conocimiento** y
