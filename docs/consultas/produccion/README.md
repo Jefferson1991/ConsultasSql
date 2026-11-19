@@ -17,6 +17,7 @@ trabajo y tiempos.
 | [moldes/SB1_VIEW_ANALISIS_MOLDES.sql](moldes/SB1_VIEW_ANALISIS_MOLDES.sql) | Vista vigente: ciclo real y número de órdenes por molde, artículo, año y mes. |
 | [moldes/analisis-moldes-fuente-anotada.sql](moldes/analisis-moldes-fuente-anotada.sql) | El mismo SELECT con las notas de por qué está armado así. |
 | [moldes/validacion-ciclo-real-2026.sql](moldes/validacion-ciclo-real-2026.sql) | Consultas de validación en DBeaver cuando el ciclo real sale 0. |
+| [moldes/sabana-produccion-por-molde.sql](moldes/sabana-produccion-por-molde.sql) | **Sábana: una fila por molde**, kilos y órdenes de cada mes más el total del año. Los moldes que no produjeron salen en cero. Año parametrizado al inicio. |
 | [moldes/_historico/analisis-moldes-version-original.sql](moldes/_historico/analisis-moldes-version-original.sql) | Versión anterior: enlazaba por `U_EMPA_COD_FRACTTAL`, una fila por OT y solo 6 moldes. No ejecutar. |
 
 Dos reglas que no se deducen del SQL y cuestan caro si se ignoran:

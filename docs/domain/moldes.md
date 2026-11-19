@@ -162,3 +162,34 @@ Para que el cambio aplique en la base debes **recrear la vista** `SB1_VIEW_ANALI
 - **Diagnóstico Ciclo Real = 0:** OTs que están en `SB1_VIEW_BEAS_RESUMEN_OF` pero no tienen filas en `BEAS_TIEMPOS_PRODUCCION` (líneas 79–94).
 
 Este análisis se basa en la estructura obtenida desde HANA (columnas de resultados y dependencias de objetos) y en la definición SQL en `Fact_Analisis_Moldes.sql`.
+
+---
+
+## 5. Verificado el 2026-11-19 (sábana de producción por molde)
+
+Hechos comprobados contra producción al construir
+`docs/consultas/produccion/moldes/sabana-produccion-por-molde.sql`:
+
+- **Enlace molde → producción:** `SB1_VIEW_PROD_TRANSFORMADOS."Lote_Orden"` = `SB1_VIEW_BEAS_RESUMEN_OF."OT"`. Esa vista ya resuelve `MOLDE_CODIGO` por OT y tiene **una sola posición por OT** (6.597 OTs, todas con una fila), así que el join no multiplica kilos.
+- **`U_EMPA_COD_BEAS` vs `U_EMPA_COD_FRACTTAL`:** hoy los dos resuelven el **mismo conjunto de 132 moldes** (cero que enlacen por uno y no por el otro). La corrección de §3 sigue siendo la correcta, pero a esta fecha no cambia la cobertura.
+- **`U_EMPA_COD_RECURSO` no sirve para identificar moldes:** marca `'MOLDE'` en 212 de las 240 filas de `SB1_VIEW_ACTIVOS_FIJOS`, incluidas máquinas. La clase de activo sí discrimina: `PPE-MOLDE-10` tiene 70 activos.
+- **`SB1_VIEW_ACTIVOS_FIJOS` no es el maestro completo:** son 240 filas, todas `Estado_Activo = 'A'`. 82 códigos de molde que sí producen no están en ella, entre ellos `MOLSOP1350` (154 OTs).
+- **Producción sin molde:** en 2026, 1.445 de 3.958 órdenes de transformados (3,38 M kg de 15,15 M) no tienen OT en Beas. Son `CARNEEXT`, `IMPRES-2`, `BOBINZ-3`, `SELLA-3`, `EXTRUS-1`: extrusión, impresión, bobinado y sellado, procesos sin molde.
+- **Defecto de `SB1_VIEW_ANALISIS_MOLDES`:** su `WHERE T3."Tiempo_Ciclo_Real" > 0` convierte los tres `LEFT JOIN` en `INNER`, así que un molde sin tiempos de producción desaparece de la salida. Señalado, no corregido.
+
+### Pregunta abierta: cuántos moldes son
+
+Jefferson indicó el 2026-11-19: **287 moldes como activos fijos** y **11 recursos
+en el maestro de recursos de Beas**. Ninguna fuente consultada da 287:
+
+| Fuente | Cuenta |
+|---|---|
+| `SB1_VIEW_ACTIVOS_FIJOS`, clase `PPE-MOLDE-10` | 70 |
+| `SB1_VIEW_ACTIVOS_FIJOS`, `U_EMPA_COD_RECURSO = 'MOLDE'` | 212 filas / 182 códigos Beas |
+| `SB1_VIEW_BEAS_RESUMEN_OF`, códigos de molde distintos | 214 |
+| Unión de las dos anteriores (universo de la sábana) | **265** |
+| `@OS_ACTIVOF`, descripción con "MOLDE" | 161 de 467 filas |
+
+Falta saber **de qué tabla o reporte salen los 287** para fijar el universo. La
+sábana lo toma de un solo sitio, el CTE `UNIVERSO`: cambiar la fuente es editar
+ese bloque.
