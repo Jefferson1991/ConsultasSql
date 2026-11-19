@@ -9,3 +9,6 @@ stats_out.txt
 # Se ignora graph.json pero NO las instrucciones de regeneracion.
 graphify-out/*
 !graphify-out/HOW_TO_REGENERATE.md
+
+# Archivos de bloqueo que crea Excel al abrir un .xlsx
+~$*
