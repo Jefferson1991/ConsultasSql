@@ -67,7 +67,7 @@ Implementado el 2026-11-19. Qué quedó:
 Desviaciones frente al plan, además de la enmienda de alcance anotada arriba:
 
 - El generador se corrigió cuatro veces durante la verificación, al leer su salida: las CTE aparecían como referencias externas; los `from email.mime.base import X` de Python entraban como `FROM` de SQL; dos literales contiguos (`msg["From"] = user`) se leían como `FROM user`; y el SP que `automatizaciones/stock-critico/` ejecuta por f-string (`EXEC {SP_NOMBRE}`) no se resolvía. Las referencias externas bajaron de 196 a 157 y aparecieron las 2 aristas que conectan los scripts Python con su SQL. El grafo nunca se tocó a mano (§5).
-- Ningún commit: §5 prohíbe commitear directo a `master` y no se pidió rama.
+- **Commit:** `82771df` en la rama `bootstrap-protocolo-agentes` (7 archivos, 900 inserciones), creada a pedido de Jefferson en la misma sesión. No se commiteó a `master` ni se hizo merge: §5 lo prohíbe y el merge queda al mantenedor. Esta línea del plan se corrigió en un segundo commit sobre la misma rama, porque la primera versión decía "ningún commit".
 
 Pendientes que este trabajo deja abiertos, no resueltos:
 
