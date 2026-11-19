@@ -30,16 +30,21 @@ REPO = Path(__file__).resolve().parent.parent
 OUT_DIR = REPO / "graphify-out"
 OUT_FILE = OUT_DIR / "graph.json"
 
-SKIP_DIRS = {".git", ".agents", "graphify-out", "docs", "scripts", "__pycache__"}
+SKIP_DIRS = {".git", ".agents", "graphify-out", "scripts", "__pycache__"}
 
-ENGINE_BY_TOP = {
-    "hana": "sap-b1-hana",
-    "sqlserver": "sqlserver",
-    "postgres": "postgresql",
-    "automatizaciones": "python",
-    "fracttal": "fracttal-export",
-    "catalogo-consultas": "docs-html",
-}
+# Las consultas viven en docs/consultas/<dominio>/... desde la reorganizacion del
+# 2026-11-19. El dominio sale de la ruta; el MOTOR ya no, porque un dominio mezcla
+# motores (compras = vista HANA + vista SQL Server + script Python). Se deduce del
+# contenido, con esta precedencia, y se guarda la evidencia que lo decidio.
+CONSULTAS_ROOT = "docs/consultas/"
+
+ENGINE_MARKERS = [
+    ("sqlserver", re.compile(r"\bOPENQUERY\s*\(|\bCREATE\s+OR\s+ALTER\b|^\s*USE\s+\w+\s*;|\bdbo\.|\bBACKUP\s+DATABASE\b", re.IGNORECASE | re.MULTILINE)),
+    # T0."ItemCode" (alias + columna entre comillas dobles) es la firma de B1 sobre
+    # HANA; M_CONNECTIONS y companeras son las vistas de sistema de HANA.
+    ("sap-b1-hana", re.compile(r"EMPAQPLAST_PROD|\bADD_DAYS\s*\(|\bDAYS_BETWEEN\s*\(|\bIFNULL\s*\(|SBO_SP_TransactionNotification|\bT\d+\.\"|\bM_[A-Z_]{3,}\b", re.IGNORECASE)),
+    ("postgresql", re.compile(r"\bauditorias\.|\bnps\.|OWNER\s+empaqplast|RESTART\s+IDENTITY", re.IGNORECASE)),
+]
 
 # Palabras que pueden seguir a FROM/JOIN y no son un objeto.
 NOT_OBJECTS = {
@@ -222,8 +227,24 @@ def collect_files() -> list[Path]:
     return files
 
 
-def engine_of(rel: str) -> str:
-    return ENGINE_BY_TOP.get(rel.split("/")[0], "desconocido")
+def domain_of(rel: str) -> str:
+    """Dominio de negocio: el segmento que sigue a docs/consultas/."""
+    if not rel.startswith(CONSULTAS_ROOT):
+        return "fuera-de-consultas"
+    resto = rel[len(CONSULTAS_ROOT):].split("/")
+    return resto[0] if len(resto) > 1 else "raiz"
+
+
+def engine_of(rel: str, text: str) -> tuple[str, str]:
+    """Motor y la evidencia que lo decidio. Nunca se adivina: si nada coincide,
+    se declara desconocido para que se vea en el grafo."""
+    if rel.endswith(".py"):
+        return "python", "extension .py"
+    for engine, marker in ENGINE_MARKERS:
+        found = marker.search(text)
+        if found:
+            return engine, found.group(0).strip()[:40]
+    return "desconocido", ""
 
 
 def build_graph() -> dict:
@@ -239,9 +260,12 @@ def build_graph() -> dict:
             continue
 
         parsed = parse_python(text) if path.suffix.lower() == ".py" else parse_sql(text)
+        engine, evidencia = engine_of(rel, text)
         node = {
             "id": rel,
-            "engine": engine_of(rel),
+            "domain": domain_of(rel),
+            "engine": engine,
+            "engine_evidence": evidencia,
             "kind": "python" if path.suffix.lower() == ".py" else "sql",
             "lines": text.count("\n") + 1,
             "creates": [

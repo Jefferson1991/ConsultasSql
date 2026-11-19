@@ -3,77 +3,80 @@
 Consultas, vistas y scripts de automatización sobre SAP B1 (HANA), SQL Server,
 PostgreSQL y Fracttal.
 
-## Organización por base de datos
+## Organización
+
+Todo vive bajo `docs/`, en dos mitades que no se mezclan: el **conocimiento** y
+las **consultas ejecutables**. Las consultas están agrupadas por dominio de
+negocio, no por motor — reorganizado el 2026-11-19, ver
+[docs/plans/2026-11-19-reorganizar-consultas-por-dominio.md](docs/plans/2026-11-19-reorganizar-consultas-por-dominio.md).
 
 ```
 Consultas con SQL/
-├── hana/              SAP B1 sobre HANA (EMPAQPLAST_PROD)
-├── sqlserver/         TimeControl, OnlyControl, AlertasB1
-├── postgres/          Apps Empaqplast, NPS
-├── automatizaciones/  Python (alertas, ETL Excel)
-├── fracttal/          Exportes Fracttal
-└── catalogo-consultas/ Guía HTML del inventario
+├── docs/
+│   ├── INDEX.md          mapa de la base de conocimiento: empezar aquí
+│   ├── mcp-registry.md   capacidad → servidor MCP, con qué se verificó
+│   ├── domain/           reglas de negocio e invariantes
+│   ├── runbooks/         procedimientos operativos
+│   ├── adr/              decisiones de arquitectura
+│   ├── plans/            planes aprobados
+│   ├── catalogo/         guía HTML del inventario
+│   └── consultas/        los archivos ejecutables, por dominio
+├── graphify-out/         índice de dependencias generado (no se edita)
+├── scripts/              graphify.py, el generador del índice
+├── AGENTS.md             protocolo para agentes
+└── README.md
 ```
 
-### hana/
+### docs/consultas/
 
-| Subcarpeta | Contenido |
-|---|---|
-| `administracion/` | Licencias, vistas B1, Query Manager |
-| `cartera/` | Bloqueos, vencidas, retenciones, SP cartera |
-| `compras/` | `SB1_VIEW_ORDENES_COMPRA` |
-| `eficiencia-energetica/` | Combustible |
-| `ia/` | Usuario BD IA |
-| `inventario/` | Revisión stock, UPC, entradas OT |
-| `logistica/` | Traslados, pallets |
-| `ops/` | Diagnóstico conexiones |
-| `produccion/` | Stock plantas, transformados, moldes |
-| `supply/` | Stock crítico (vistas HANA) |
-| `validaciones/` | Transaction Notifications |
-| `ventas/` | Facturas pricing, notas de crédito BI |
+| Dominio | Contenido | Motores |
+|---|---|---|
+| `activos-fijos/` | Sábana para Power BI, exportes de Fracttal | HANA |
+| `apps/` | Auth, permisos y menús, DDL de infra, NPS | PostgreSQL |
+| `cartera/` | Bloqueos, vencidas con excedente, retenciones | HANA |
+| `compras/` | Cadena de alerta de órdenes de compra | HANA → SQL Server → Python |
+| `eficiencia-energetica/` | Combustible | HANA |
+| `inventario/` | Stock, antigüedad PT/MP, UPC, datos maestros, auditoría UIO/GYE | HANA |
+| `logistica/` | Pallets del flujo automático, traslados | HANA |
+| `plataforma/` | Administración B1, validaciones, backups, diagnóstico | HANA + SQL Server |
+| `produccion/` | Transformados, trazabilidad PT→MP, moldes | HANA + Beas |
+| `rrhh/` | Ausentismo, atrasos, permisos, asistencia, festivos, Power BI | SQL Server |
+| `supply/` | Cadena de alerta de stock crítico | HANA → SQL Server → Python |
+| `ventas/` | Notas de crédito BI, cadena de pricing | HANA → Python |
 
-### sqlserver/
-
-| Subcarpeta | Contenido |
-|---|---|
-| `alertas-b1/` | Vistas OPENQUERY sobre HANA |
-| `rrhh/` | vm_atrasos, Power BI, asistencia, permisos |
-| `supply/` | SP stock crítico |
-| `etl/` | Carga rotación |
-| `ops/` | Backups |
-
-### postgres/
-
-| Subcarpeta | Contenido |
-|---|---|
-| `app/` | Auth y DDL infra |
-| `nps/` | Campañas NPS |
-
-### automatizaciones/
-
-Scripts Python que orquestan SQL + correo/Excel. Van **junto** a las consultas
-de su BDD origen en subcarpetas temáticas (`ordenes-compra/`, `pricing/`,
-`stock-critico/`).
+Cada dominio tiene su `README.md` con el detalle: qué archivo es, **en qué motor
+y servidor corre**, qué hace y en qué orden se despliega.
 
 ## Reglas
 
-- **Pedido nuevo:** crear subcarpeta dentro del motor correcto (`hana/cartera/`, `sqlserver/rrhh/`, etc.).
-- **Nombre:** kebab-case, descriptivo del asunto, en español, sin fechas.
-- **Continuación:** misma subcarpeta existente, no crear paralela.
-- **Raíz:** solo `README.md`, `Consultas.code-workspace`, `.mcp.json`.
-- **Cabecera SQL:** propósito, esquema, supuestos verificados, orden de despliegue.
+- **Pedido nuevo:** carpeta del **dominio**, no del motor (`docs/consultas/cartera/`, `docs/consultas/rrhh/`). Si el pedido cruza motores, los archivos van juntos en el mismo dominio.
+- **Nombre:** si el script crea un objeto de base de datos, el archivo se llama igual que el objeto (`SB1_VIEW_NC_CABECERA.sql`); si es un reporte o un análisis, kebab-case en español, sin fechas.
+- **Continuación:** misma carpeta de dominio, no crear una paralela.
+- **Superado:** a `_historico/` dentro de su dominio. No se ejecuta.
+- **Raíz:** solo `README.md`, `AGENTS.md`, `Consultas.code-workspace`, `.mcp.json`, `skills-lock.json`, más `docs/`, `scripts/` y `graphify-out/`.
+- **Cabecera SQL:** propósito, motor y esquema o base, supuestos verificados con fecha, orden de despliegue.
+- **Al cerrar el pedido:** fila nueva en el `README.md` del dominio, y lo que se aprendió a `docs/domain/` o `docs/runbooks/`.
 
 ## Convenciones técnicas
 
 - **SAP B1 / HANA:** columnas `"ItemCode"` con comillas; tablas `OITM` sin comillas; esquema `EMPAQPLAST_PROD`.
-- **Alertas:** HANA `SB1_VIEW_*` → `sqlserver/alertas-b1/` OPENQUERY → `automatizaciones/` Python.
+- **Alertas:** vista `SB1_VIEW_*` en HANA → vista `OPENQUERY` en SQL Server → script Python. Las tres piezas viven en la carpeta del dominio.
 - **OPENQUERY:** el `WHERE` va **dentro** del OPENQUERY.
 - **Python:** `sqlcmd` para base de datos.
 - Verificar esquema en vivo antes de escribir consultas.
 
+## Dependencias entre objetos
+
+`graphify-out/graph.json` dice qué objeto crea cada archivo, qué referencia y qué
+depende de qué. Se regenera con:
+
+```powershell
+python scripts/graphify.py
+```
+
 ## Catálogo y Agent Skills
 
-Guía interactiva: `catalogo-consultas/guia-consultas.html`
+Guía interactiva: `docs/catalogo/guia-consultas.html`
 
 Skills del proyecto en `.agents/skills/` (Cursor los carga automáticamente).
 Registry externo fijado en `skills-lock.json`; restaurar con
@@ -90,4 +93,3 @@ Registry externo fijado en `skills-lock.json`; restaurar con
 | `sap-sqlscript` | [skills.sh](https://skills.sh/secondsky/sap-skills/sap-sqlscript) | HANA SQLScript / SP |
 
 Instalar más skills: `npx skills find postgres` o `npx skills add owner/repo --skill nombre -a cursor -y`.
-`npx autoskills` en este repo solo detecta frontend (por `guia-consultas.html`); usar `skills add` para SQL.

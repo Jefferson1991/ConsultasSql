@@ -181,10 +181,10 @@ Layout under `docs/`:
 
 *Relleno el 2026-11-19 a partir de lectura del repo y del índice topológico. Lo que dice "ninguno" se comprobó ausente, no se omitió.*
 
-- **Languages:** SQL (HANA SQLScript, T-SQL, PL/pgSQL) en 62 archivos; Python 3 en 3 scripts de `automatizaciones/`. Sin compilación.
+- **Languages:** SQL (HANA SQLScript, T-SQL, PL/pgSQL) en 62 archivos; Python 3 en 3 scripts de automatización, cada uno junto a la consulta que ejecuta. Sin compilación.
 - **Frameworks:** ninguno. Los scripts usan librería estándar más `hdbcli`, `openpyxl`, `xlsxwriter` y `sqlcmd` como subproceso. No hay `package.json`, `pyproject.toml`, `requirements.txt` en la raíz ni `Makefile`.
 - **Databases:** SAP B1 sobre HANA (esquema `EMPAQPLAST_PROD`, HANA 2.00.087); SQL Server 2022 Express (`internaEmpaqplast`, `AlertasB1`, `TH` en `SRV-APP\SQLEXPRESS`) y SQL Server 2008 R2 (`TCONTROL` en `SRV-BIOM-001`); PostgreSQL 16 (`energia` local, `emp_bi` en RDS); MySQL de nómina (PAC).
-- **Architecture pattern:** repositorio de consultas organizado por motor, no aplicación. La dependencia real son objetos de base de datos, no imports. Patrón de alertas: vista `SB1_VIEW_*` en HANA → vista `OPENQUERY` en SQL Server → script Python que envía correo/Excel.
+- **Architecture pattern:** repositorio de consultas organizado por **dominio de negocio**, no aplicación y no por motor. La dependencia real son objetos de base de datos, no imports. Patrón de alertas: vista `SB1_VIEW_*` en HANA → vista `OPENQUERY` en SQL Server → script Python que envía correo/Excel; las tres piezas viven juntas en la carpeta del dominio (`compras/`, `supply/`).
 - **Inter-service communication:** linked servers (`HANAODBC` hacia HANA, `ONLYC` hacia OnlyControl, `EMP_NOM` hacia nómina) con el `WHERE` **dentro** del `OPENQUERY`; `sqlcmd` desde Python; servidores MCP para consultar esquema y datos en vivo.
 - **Lint/format authority:** ninguno. No hay archivo de configuración de lint ni formato en el repo; manda la sección "Convenciones técnicas" de `README.md`.
 - **Test command:** ninguno. No hay `tests/` ni suite. La verificación de una consulta es ejecutarla contra el origen por MCP y comparar el resultado con lo que se afirma.
@@ -195,17 +195,19 @@ Layout under `docs/`:
 
 ### 7.1 Directory map
 
-- `hana/` — SAP B1 sobre HANA, por área: `administracion/`, `cartera/`, `compras/`, `eficiencia-energetica/`, `inventario/`, `logistica/`, `produccion/`, `supply/`, `validaciones/`, `ventas/`, `ops/`, `ia/`
-- `sqlserver/` — `alertas-b1/` (vistas `OPENQUERY`), `rrhh/` (ausentismo, atrasos, Power BI, mantenimiento, `anteriores/` = versiones superadas), `etl/`, `supply/`, `ops/`
-- `postgres/` — `app/` (auth y DDL de infraestructura), `nps/` (campañas)
-- `automatizaciones/` — scripts Python por asunto (`ordenes-compra/`, `pricing/`, `stock-critico/`); van junto a las consultas de su origen
-- `fracttal/` — exportes de mantenimiento (xlsx)
-- `catalogo-consultas/` — guía HTML del inventario
-- `.agents/skills/` — skills del proyecto por motor; externas fijadas en `skills-lock.json`
+*Reorganizado el 2026-11-19: todo pasó a `docs/`, y las consultas se agrupan por **dominio de negocio**, no por motor. Ver `docs/plans/2026-11-19-reorganizar-consultas-por-dominio.md`.*
+
+- `docs/` — base de conocimiento (§6) **y** las consultas; empieza por `docs/INDEX.md`
+  - `docs/INDEX.md`, `docs/mcp-registry.md`, `docs/domain/`, `docs/runbooks/`, `docs/adr/`, `docs/plans/` — el conocimiento, con la estructura de §6
+  - `docs/catalogo/guia-consultas.html` — guía interactiva del inventario
+  - `docs/consultas/<dominio>/` — los archivos ejecutables: `activos-fijos`, `apps`, `cartera`, `compras`, `eficiencia-energetica`, `inventario`, `logistica`, `plataforma`, `produccion`, `rrhh`, `supply`, `ventas`. Cada uno con `README.md` que dice motor, servidor y orden de despliegue de cada archivo
+  - `docs/consultas/**/_historico/` — versiones superadas; no se ejecutan
 - `scripts/` — utilitarios del repo: `graphify.py` genera el índice topológico
 - `graphify-out/` — índice de dependencias generado (solo lectura, §5)
-- `docs/` — base de conocimiento (§6); empieza por `docs/INDEX.md`
+- `.agents/skills/` — skills del proyecto por motor; las externas van fijadas en `skills-lock.json` y no se editan
 - No hay `src/`, `app/` ni `tests/`: este repo no es una aplicación
+
+**Desviación consciente de §6:** esa sección reserva `docs/` para la base de conocimiento. Aquí `docs/` además contiene `consultas/` y `catalogo/`, por decisión de Jefferson del 2026-11-19. La estructura de §6 sigue valiendo tal cual para el resto de `docs/`.
 
 ---
 
