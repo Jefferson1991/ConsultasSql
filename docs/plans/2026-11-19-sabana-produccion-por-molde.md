@@ -3,7 +3,7 @@
 - **Date:** 2026-11-19
 - **Status:** Implemented
 - **Approved by:** Jefferson, en sesión: "necesito un query que emita esta sábana" — listado de moldes no repetidos, cuánto se fabricó con cada uno por mes y el total del año; los que no produjeron, en cero o en blanco.
-- **Scope:** `docs/consultas/produccion/moldes/sabana-produccion-por-molde.sql` (nuevo), fila en `docs/consultas/produccion/README.md`, hechos verificados a `docs/domain/moldes.md`.
+- **Scope:** `docs/consultas/produccion/moldes/sabana-produccion-por-molde.sql` (nuevo), `docs/consultas/produccion/moldes/Moldes Activos.xlsx` (lo aporto Jefferson como universo de moldes), fila en `docs/consultas/produccion/README.md`, hechos verificados a `docs/domain/moldes.md`.
 - **Out of scope:** no se modifica `SB1_VIEW_ANALISIS_MOLDES` ni ninguna otra vista; no se crea ningún objeto en HANA. La consulta es de solo lectura.
 
 ## Problem
@@ -19,7 +19,7 @@ por molde, artículo, año y mes. Tres cosas la hacen inservible para esta sába
 
 Consulta nueva, independiente, que no toca la vista existente.
 
-- **Universo de moldes = unión** de los moldes de activos fijos (`SB1_VIEW_ACTIVOS_FIJOS`, `U_EMPA_COD_RECURSO = 'MOLDE'`) y de los que aparecen en órdenes de Beas (`SB1_VIEW_BEAS_RESUMEN_OF.MOLDE_CODIGO`). Verificado: 182 en activos fijos, 214 en Beas, **265 únicos**. Basarse solo en activos fijos perdería los más usados — `MOLSOP1350`, con 154 OTs, no está en el maestro de activos.
+- **Universo de moldes = la lista de Talento**, incrustada en la consulta desde `Moldes Activos.xlsx`, hoja `MOLDES HABILES`, columna `COD. FRACCTAL`: **297 moldes distintos** (286 con clase de activo, 11 sin codigo SAP que son los recursos del maestro de Beas; `MOLSOP1327` viene repetido en el archivo). Se incrusta porque la base no tiene esa lista: `SB1_VIEW_ACTIVOS_FIJOS` son 240 filas en total y Beas solo conoce los moldes que aparecieron en alguna orden; por `LIKE 'MOL%'` la union de ambas da 270. A la lista se le suma cualquier molde que haya producido sin estar en ella, marcado `FUERA DE LA LISTA`, para que la lista se pueda mantener al dia.
 - **Enlace molde → producción:** `SB1_VIEW_PROD_TRANSFORMADOS."Lote_Orden"` = `SB1_VIEW_BEAS_RESUMEN_OF."OT"`, que ya resuelve el molde por OT. Verificado que esa vista tiene **una sola posición por OT** (6.597 OTs, todas con una fila), así que el join no multiplica kilos.
 - **Grano de salida:** una fila por molde. Kilos y número de órdenes por mes, más totales del año. Sin producción → 0.
 - **Año como parámetro** al inicio de la consulta, para que se cambie en un solo lugar.
@@ -58,11 +58,12 @@ Implementado el 2026-11-19. La consulta se ejecutó contra producción y devuelv
 señalado en `docs/domain/moldes.md` el defecto de `SB1_VIEW_ANALISIS_MOLDES` (el
 `WHERE` que anula los `LEFT JOIN`), sin corregirlo: eso es otra decisión.
 
-**Pendiente que afecta al universo.** Jefferson indicó, ya terminada la consulta,
-que son **287 moldes como activos fijos** y **11 recursos del maestro de recursos
-de Beas**. Ninguna fuente consultada da 287: la clase `PPE-MOLDE-10` tiene 70
-activos, `U_EMPA_COD_RECURSO = 'MOLDE'` marca 182 códigos (y es un flag poco
-fiable: etiqueta también máquinas), Beas referencia 214 códigos de molde y
-`@OS_ACTIVOF` tiene 161 filas con "MOLDE" en la descripción. El detalle está en
-`docs/domain/moldes.md` §5. Falta que Jefferson diga de qué tabla o reporte salen
-los 287; el cambio es de un bloque, el CTE `UNIVERSO`.
+**Universo resuelto el 2026-11-19.** Jefferson entregó
+`Moldes Activos.xlsx` (hoja `MOLDES HABILES`): 298 filas, de las cuales 287 tienen
+clase de activo y **11 no tienen código SAP** — esos son los 11 recursos que solo
+viven en el maestro de recursos de Beas. Con el código repetido `MOLSOP1327`
+descontado, son **297 moldes distintos**, que es el universo que ahora emite la
+consulta. Contraste contra producción: de los 178 moldes que fabricaron en 2026,
+solo **3 no están en la lista** — `MOLINY1402AB` (7.615 kg), `MOLINY1440` (88 kg)
+y `MOLINYSTD0002` (6 kg) — y salen igual, marcados `FUERA DE LA LISTA`. La sábana
+devuelve 300 filas: 297 de la lista más esos 3.

@@ -177,19 +177,27 @@ Hechos comprobados contra producción al construir
 - **Producción sin molde:** en 2026, 1.445 de 3.958 órdenes de transformados (3,38 M kg de 15,15 M) no tienen OT en Beas. Son `CARNEEXT`, `IMPRES-2`, `BOBINZ-3`, `SELLA-3`, `EXTRUS-1`: extrusión, impresión, bobinado y sellado, procesos sin molde.
 - **Defecto de `SB1_VIEW_ANALISIS_MOLDES`:** su `WHERE T3."Tiempo_Ciclo_Real" > 0` convierte los tres `LEFT JOIN` en `INNER`, así que un molde sin tiempos de producción desaparece de la salida. Señalado, no corregido.
 
-### Pregunta abierta: cuántos moldes son
+### Cuántos moldes son (resuelto el 2026-11-19)
 
-Jefferson indicó el 2026-11-19: **287 moldes como activos fijos** y **11 recursos
-en el maestro de recursos de Beas**. Ninguna fuente consultada da 287:
+La fuente es `docs/consultas/produccion/moldes/Moldes Activos.xlsx`, hoja
+`MOLDES HABILES`, que aportó Jefferson. No está en la base de datos.
 
-| Fuente | Cuenta |
+| | |
 |---|---|
-| `SB1_VIEW_ACTIVOS_FIJOS`, clase `PPE-MOLDE-10` | 70 |
-| `SB1_VIEW_ACTIVOS_FIJOS`, `U_EMPA_COD_RECURSO = 'MOLDE'` | 212 filas / 182 códigos Beas |
-| `SB1_VIEW_BEAS_RESUMEN_OF`, códigos de molde distintos | 214 |
-| Unión de las dos anteriores (universo de la sábana) | **265** |
-| `@OS_ACTIVOF`, descripción con "MOLDE" | 161 de 467 filas |
+| Filas del archivo | 298 |
+| Con clase de activo (`CLASE`) | **287** — los moldes como activo fijo |
+| Sin código SAP | **11** — los recursos que solo existen en el maestro de recursos de Beas |
+| Códigos `COD. FRACCTAL` distintos | **297** (`MOLSOP1327` aparece dos veces) |
 
-Falta saber **de qué tabla o reporte salen los 287** para fijar el universo. La
-sábana lo toma de un solo sitio, el CTE `UNIVERSO`: cambiar la fuente es editar
-ese bloque.
+El código que une con Beas es `COD. FRACCTAL`, que es el que Beas guarda en
+`SB1_VIEW_BEAS_RESUMEN_OF.MOLDE_CODIGO`.
+
+**La base no tiene esta lista.** `SB1_VIEW_ACTIVOS_FIJOS` son 240 filas en total
+—es una vista filtrada, no el maestro— y Beas solo conoce los moldes que
+aparecieron en alguna orden: por `LIKE 'MOL%'` la unión de ambas da 270, no 297.
+Por eso la sábana incrusta la lista y se regenera desde el Excel cuando cambie.
+
+Contraste contra producción 2026: de los 178 moldes que fabricaron, **solo 3 no
+están en la lista** (`MOLINY1402AB`, `MOLINY1440`, `MOLINYSTD0002`, entre los tres
+7.709 kg). La consulta los incluye marcados `FUERA DE LA LISTA`, que es la señal
+de que al archivo le falta una fila.
