@@ -65,5 +65,9 @@ viven en el maestro de recursos de Beas. Con el código repetido `MOLSOP1327`
 descontado, son **297 moldes distintos**, que es el universo que ahora emite la
 consulta. Contraste contra producción: de los 178 moldes que fabricaron en 2026,
 solo **3 no están en la lista** — `MOLINY1402AB` (7.615 kg), `MOLINY1440` (88 kg)
-y `MOLINYSTD0002` (6 kg) — y salen igual, marcados `FUERA DE LA LISTA`. La sábana
-devuelve 300 filas: 297 de la lista más esos 3.
+y `MOLINYSTD0002` (6 kg) — y salen igual, marcados `FUERA DE LA LISTA`. Esos 3 se **agregaron al Excel** el mismo día, con código y descripción
+tomados de `SB1_VIEW_BEAS_RESUMEN_OF` y `COD SAP`/`CLASE` vacíos porque no se
+les encontró ficha de activo fijo. El archivo pasó de 298 a 301 filas y de 297
+a **300 códigos distintos**, y el bloque incrustado en el `.sql` se regeneró:
+la sábana devuelve ahora 300 filas y ya no queda ningún molde fabricando fuera
+de la lista.

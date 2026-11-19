@@ -184,10 +184,10 @@ La fuente es `docs/consultas/produccion/moldes/Moldes Activos.xlsx`, hoja
 
 | | |
 |---|---|
-| Filas del archivo | 298 |
+| Filas del archivo | 301 (eran 298 antes del 2026-11-19) |
 | Con clase de activo (`CLASE`) | **287** — los moldes como activo fijo |
-| Sin código SAP | **11** — los recursos que solo existen en el maestro de recursos de Beas |
-| Códigos `COD. FRACCTAL` distintos | **297** (`MOLSOP1327` aparece dos veces) |
+| Sin código SAP | **14** — los 11 recursos que solo existen en el maestro de recursos de Beas, más los 3 agregados abajo |
+| Códigos `COD. FRACCTAL` distintos | **300** (`MOLSOP1327` aparece dos veces en el archivo) |
 
 El código que une con Beas es `COD. FRACCTAL`, que es el que Beas guarda en
 `SB1_VIEW_BEAS_RESUMEN_OF.MOLDE_CODIGO`.
@@ -197,7 +197,12 @@ El código que une con Beas es `COD. FRACCTAL`, que es el que Beas guarda en
 aparecieron en alguna orden: por `LIKE 'MOL%'` la unión de ambas da 270, no 297.
 Por eso la sábana incrusta la lista y se regenera desde el Excel cuando cambie.
 
-Contraste contra producción 2026: de los 178 moldes que fabricaron, **solo 3 no
-están en la lista** (`MOLINY1402AB`, `MOLINY1440`, `MOLINYSTD0002`, entre los tres
-7.709 kg). La consulta los incluye marcados `FUERA DE LA LISTA`, que es la señal
-de que al archivo le falta una fila.
+Contraste contra producción 2026: de los 178 moldes que fabricaron, 3 no estaban
+en la lista — `MOLINY1402AB` (7.615 kg), `MOLINY1440` (88 kg) y `MOLINYSTD0002`
+(6 kg). **Se agregaron al Excel el 2026-11-19**, con el código y la descripción
+tomados de `SB1_VIEW_BEAS_RESUMEN_OF`, y `COD SAP` y `CLASE` vacíos porque no se
+les encontró ficha de activo fijo. Con eso ya no queda ningún molde fabricando
+fuera de la lista.
+
+La columna `Origen_Molde` de la sábana sigue marcando `FUERA DE LA LISTA` si
+aparece otro: esa es la señal de que al archivo le falta una fila.
