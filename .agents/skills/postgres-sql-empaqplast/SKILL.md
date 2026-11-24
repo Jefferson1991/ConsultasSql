@@ -2,7 +2,7 @@
 name: postgres-sql-empaqplast
 description: >-
   Escribe SQL seguro y mantenible para PostgreSQL en Empaqplast: auth app, NPS,
-  permisos, menús y DDL. Usar cuando la consulta va en postgres/, mencione
+  permisos, menús y DDL. Usar cuando la consulta es de PostgreSQL, , mencione
   schemas auditorias/nps, permisos de roles, migraciones o MCP postgres-empaqplast.
 ---
 
@@ -15,7 +15,7 @@ description: >-
 | `user-postgres-produccion-empaqplast-cloud` | Producción cloud |
 | `user-postgres-local-empaqplast` | Local / desarrollo |
 
-Repo: `postgres/{app|nps}/`
+Repo: `docs/consultas/apps/` (y `docs/consultas/apps/nps/`)
 
 ## Estilo y nombres
 
@@ -78,9 +78,9 @@ COMMIT;
 
 | Archivo | Qué hace |
 |---------|----------|
-| `postgres/app/AutenticaciónNuevo.sql` | Permisos, menús, páginas auth |
-| `postgres/app/Crear Base de datos en postgres.sql` | DDL infra |
-| `postgres/nps/Conf Nps.sql` | Campañas NPS semestrales |
+| `docs/consultas/apps/auth-permisos-y-menus.sql` | Permisos, menús, páginas auth |
+| `docs/consultas/apps/crear-base-de-datos.sql` | DDL infra |
+| `docs/consultas/apps/nps/configuracion-nps.sql` | Campañas NPS semestrales |
 
 Antes de crear permiso/menú nuevo, buscar patrón en `AutenticaciónNuevo.sql`.
 
@@ -101,7 +101,7 @@ LIMIT 100;
 - [ ] snake_case consistente
 - [ ] Permisos mínimos (GRANT explícito)
 - [ ] Script idempotente o documentado como one-shot
-- [ ] Archivo en `postgres/app/` o `postgres/nps/`
+- [ ] Archivo en `docs/consultas/apps/` o `docs/consultas/apps/nps/`
 
 ## Referencia extendida
 

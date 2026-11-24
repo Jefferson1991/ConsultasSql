@@ -33,4 +33,4 @@ Usar MCP `hana_explain_plan` antes de desplegar vistas que escaneen tablas grand
 `SB1_VIEW_ORDENES_COMPRA`, `SB1_VIEW_REVISION_STOCK_V2`, `SB1_VIEW_STATUS_RETENCION_CARTERA`,
 `SB1_VIEW_UBICACIONES_UPC`, `create_view_reporte_stock_critico`, `create_view_analisis_moldes`
 
-Consultar repo `hana/` y catálogo HTML antes de crear vista nueva.
+Consultar `docs/consultas/` y `docs/catalogo/guia-consultas.html` antes de crear vista nueva.

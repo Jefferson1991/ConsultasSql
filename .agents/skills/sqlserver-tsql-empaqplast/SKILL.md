@@ -3,7 +3,7 @@ name: sqlserver-tsql-empaqplast
 description: >-
   Escribe y optimiza T-SQL para Empaqplast en SQL Server: TimeControl, OnlyControl,
   AlertasB1 (OPENQUERY HANA), vistas vm_atrasos, ETL y Power BI. Usar cuando la
-  consulta va en sqlserver/, mencione TBL_ASISTENCIA, OPENQUERY, vm_atrasos,
+  consulta es de SQL Server, , mencione TBL_ASISTENCIA, OPENQUERY, vm_atrasos,
   NOMINA, AlertasB1 o linked server HANAODBC.
 ---
 
@@ -17,7 +17,7 @@ description: >-
 | `user-sqlserver-onlycontrol` | `NOMINA`, `AREA`, `CALIFICA` |
 | `user-sqlserver-etl-local-internaEmpaqplast` | ETL rotación |
 
-Repo: `sqlserver/{alertas-b1|rrhh|supply|etl|ops}/`
+Repo: `docs/consultas/<dominio>/` — RRHH en `rrhh/`, las vistas OPENQUERY junto a su vista HANA (`compras/`, `supply/`), backups en `plataforma/ops/`
 
 ## OPENQUERY AlertasB1 (crítico)
 
@@ -65,11 +65,11 @@ WHERE a.Fecha_Ingreso >= @fecha_desde
 - Separar **dimensión** (empleados, áreas) de **hechos** (asistencia diaria)
 - Documentar relaciones en cabecera del .sql
 - Siempre filtrar por rango de fechas en origen, no solo en DAX
-- Archivos en `sqlserver/rrhh/`
+- Archivos en `docs/consultas/rrhh/<subtema>/` (ausentismo, atrasos, permisos, asistencia, calendario, powerbi)
 
 ## ETL incremental
 
-Patrón en `sqlserver/etl/`:
+Patrón en `docs/consultas/rrhh/asistencia/carga-rotacion-turnos.sql`:
 
 1. Vista staging (filas nuevas → formato destino)
 2. MERGE o INSERT condicionado sin duplicados
@@ -98,7 +98,7 @@ END
 - [ ] Esquema verificado con MCP
 - [ ] Filtro de fecha en tablas grandes
 - [ ] OPENQUERY con WHERE interno (si aplica)
-- [ ] Archivo en `sqlserver/{subcarpeta}/`
+- [ ] Archivo en `docs/consultas/<dominio>/`
 - [ ] UPDATE/DELETE precedido de SELECT de validación
 
 ## Referencia extendida

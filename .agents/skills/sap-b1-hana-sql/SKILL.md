@@ -3,7 +3,7 @@ name: sap-b1-hana-sql
 description: >-
   Escribe y optimiza SQL sobre SAP Business One en SAP HANA (EMPAQPLAST_PROD):
   vistas SB1_VIEW_*, Transaction Notifications SQLScript, UDFs y reportes B1.
-  Usar cuando la consulta va en hana/, mencione OITM/OINV/OPOR, columnas entre
+  Usar cuando la consulta es de SAP B1 / HANA, , mencione OITM/OINV/OPOR, columnas entre
   comillas dobles, HANA, SAP B1 o esquema EMPAQPLAST_PROD.
 ---
 
@@ -15,7 +15,7 @@ Antes de escribir o modificar SQL:
 
 1. MCP `user-hana-sap-b1-produccion`: `hana_describe_table`, `hana_execute_query`
 2. Probar `SELECT COUNT(*)` con los mismos filtros de la consulta final
-3. Ubicar scripts existentes en repo: `hana/{dominio}/`
+3. Ubicar scripts existentes en repo: `docs/consultas/{dominio}/` (ver `docs/consultas/README.md`)
 
 ## Sintaxis Empaqplast (no negociable)
 
@@ -69,19 +69,19 @@ LANGUAGE SQLSCRIPT
 
 - Validar `object_type` (17=ORDR, etc.) y `transaction_type` antes de lógica
 - Mensajes de error claros en `error_message`; `error := -NNN` según convención B1
-- Guardar en `hana/validaciones/`
+- Guardar en `docs/consultas/plataforma/sap-b1/`
 
 ## Dominios y tablas frecuentes
 
 | Dominio | Carpeta repo | Tablas |
 |---------|--------------|--------|
-| Cartera | `hana/cartera/` | `OCRD`, `OINV`, `INV1`, `ORIN`, `JDT1` |
-| Inventario | `hana/inventario/` | `OITM`, `OITW`, `OINM`, `OWHS` |
-| Compras | `hana/compras/` | `OPOR`, `POR1`, `OPDN` |
-| Ventas | `hana/ventas/` | `OINV`, `INV1`, `OCRD` |
-| Producción | `hana/produccion/` | `OWOR`, `WOR1`, `OIGE`, `IGE1` |
-| Logística | `hana/logistica/` | `OWTR`, `WTR1`, `ODLN`, `OWTQ` |
-| Supply | `hana/supply/` | `OITM`, `OITW`, vistas stock |
+| Cartera | `docs/consultas/cartera/` | `OCRD`, `OINV`, `INV1`, `ORIN`, `JDT1` |
+| Inventario | `docs/consultas/inventario/` | `OITM`, `OITW`, `OINM`, `OWHS` |
+| Compras | `docs/consultas/compras/` | `OPOR`, `POR1`, `OPDN` |
+| Ventas | `docs/consultas/ventas/` | `OINV`, `INV1`, `OCRD` |
+| Producción | `docs/consultas/produccion/` | `OWOR`, `WOR1`, `OIGE`, `IGE1` |
+| Logística | `docs/consultas/logistica/` | `OWTR`, `WTR1`, `ODLN`, `OWTQ` |
+| Supply | `docs/consultas/supply/` | `OITM`, `OITW`, vistas stock |
 
 ## UDFs Empaqplast
 
@@ -106,7 +106,7 @@ LANGUAGE SQLSCRIPT
 - [ ] Columnas verificadas con `hana_describe_table`
 - [ ] Filtros de negocio (`CANCELED`, fechas, series) en WHERE
 - [ ] COUNT(*) probado con filtros reales
-- [ ] Archivo en `hana/{dominio}/`
+- [ ] Archivo en `docs/consultas/{dominio}/`
 - [ ] Sin números mágicos ni ajustes manuales sin documentar
 
 ## Referencia extendida
