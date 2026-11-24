@@ -6,7 +6,7 @@ Todo sobre SAP B1 en HANA, esquema `EMPAQPLAST_PROD`.
 |---|---|---|
 | [SB1_VIEW_ANTIGUEDAD_INVENTARIO_PT_MP.sql](SB1_VIEW_ANTIGUEDAD_INVENTARIO_PT_MP.sql) | `SB1_VIEW_ANTIGUEDAD_INVENTARIO_PT_MP` | Antigüedad de producto terminado y materia prima. Una fila por artículo + lote + bodega con stock positivo; sin lote, una fila por artículo + bodega con lote `'SIN LOTE'`. Ticket GLPI 2621. |
 | [SB1_VIEW_REVISION_STOCK_V2.sql](SB1_VIEW_REVISION_STOCK_V2.sql) | `SB1_VIEW_REVISION_STOCK_V2` | Revisión de stock. |
-| [SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql](SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql) | `SB1_VIEW_REVISION_STOCK_V2` | **Segunda definición del mismo objeto.** Ver el aviso de abajo. |
+| [SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql](SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql) | `SB1_VIEW_REVISION_STOCK_V2` | **Segunda definición del mismo objeto** (la que describe la base). OC pendientes = abiertas **o** carpeta importación no liquidada; columna `Status_Importacion`. Regla: [revision-stock-oc-pendientes.md](../../domain/revision-stock-oc-pendientes.md). |
 | [SB1_VIEW_UBICACIONES_UPC.sql](SB1_VIEW_UBICACIONES_UPC.sql) | `SB1_VIEW_UBICACIONES_UPC` | Ubicaciones y UPC por artículo y bodega. |
 | [SB1_VIEW_REPORTE_ENTRADA_MERCANCIAS_OT.sql](SB1_VIEW_REPORTE_ENTRADA_MERCANCIAS_OT.sql) | `SB1_VIEW_REPORTE_ENTRADA_MERCANCIAS_OT` | Entradas de mercancía por orden de trabajo, con año/mes/día separados. |
 | [datos-maestros-articulos.sql](datos-maestros-articulos.sql) | — | Artículos activos con grupo, unidad de medida, y fecha y usuario de creación y actualización. Pedido de Diego Morales, 2026-11-06. |

@@ -12,14 +12,16 @@ procedimientos, decisiones) y las **consultas ejecutables**.
 |---|---|
 | [mcp-registry.md](mcp-registry.md) | Capacidad → servidor MCP, con qué se verificó cada uno y cuáles estaban caídos. |
 | [domain/atrasos.md](domain/atrasos.md) | `vm_atrasos`: el reporte de atrasos y faltas injustificadas de Talento Humano, sus versiones y el soporte de festivos. |
-| [domain/moldes.md](domain/moldes.md) | `SB1_VIEW_ANALISIS_MOLDES` y sus objetos base, con las dependencias por tabla de B1. |
+| [domain/moldes.md](domain/moldes.md) | `SB1_VIEW_ANALISIS_MOLDES` y objetos base; ItemHora = suma cavidades multi-molde (`TOTAL_CAVIDADES_ESTANDAR`). |
 | [domain/notas-credito.md](domain/notas-credito.md) | Notas de crédito del BI de Gerencia: grano de cabecera y detalle, y por qué los montos van positivos frente a las vistas de venta. |
 | [domain/rrhh-tablero-powerbi.md](domain/rrhh-tablero-powerbi.md) | Arquitectura del tablero de RRHH: TCONTROL (biométrico) + ONLYCONTROL (maestros). |
 | [domain/stock-diferencias-con-la-bdd.md](domain/stock-diferencias-con-la-bdd.md) | En qué se apartan de la base los archivos guardados de `SB1_VIEW_REVISION_STOCK_V2` y `SB1_VIEW_REPORTE_STOCK_CRITICO`, con la evidencia. Comprobado el 2026-11-19. |
+| [domain/revision-stock-oc-pendientes.md](domain/revision-stock-oc-pendientes.md) | OC pendiente en revisión de stock: abiertas **o** carpeta `@ALS_CARPETA_IMP` no liquidada. Jefferson, 2026-11-24. |
 | [runbooks/ausentismo.md](runbooks/ausentismo.md) | Qué dos scripts de ausentismo son los vigentes, en qué servidor y base corre cada uno y en qué orden. |
 | [runbooks/powerbi-rrhh-consultas-diarias.md](runbooks/powerbi-rrhh-consultas-diarias.md) | Consultas de uso diario del tablero de RRHH. |
 | [plans/2026-11-19-bootstrap-protocolo-agentes.md](plans/2026-11-19-bootstrap-protocolo-agentes.md) | Puesta en marcha del protocolo de `AGENTS.md`. Implementado. |
 | [plans/2026-11-19-reorganizar-consultas-por-dominio.md](plans/2026-11-19-reorganizar-consultas-por-dominio.md) | Esta reorganización: mapeo completo de qué se movió y por qué. |
+| [plans/2026-11-24-itemhora-cavidades-multi-molde.md](plans/2026-11-24-itemhora-cavidades-multi-molde.md) | `ItemHora` usa `TOTAL_CAVIDADES_ESTANDAR` (OTs con 2+ moldes). |
 | `adr/` | **Aún no existe.** Primer candidato: por qué la cadena de alertas es HANA → `OPENQUERY` → Python y no una consulta directa. |
 | `integrations/` | **Aún no existe.** Primeros candidatos: `timecontrol.md` y `fracttal.md`. |
 
