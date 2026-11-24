@@ -6,7 +6,7 @@ Todo sobre SAP B1 en HANA, esquema `EMPAQPLAST_PROD`.
 |---|---|---|
 | [SB1_VIEW_ANTIGUEDAD_INVENTARIO_PT_MP.sql](SB1_VIEW_ANTIGUEDAD_INVENTARIO_PT_MP.sql) | `SB1_VIEW_ANTIGUEDAD_INVENTARIO_PT_MP` | Antigüedad de producto terminado y materia prima. Una fila por artículo + lote + bodega con stock positivo; sin lote, una fila por artículo + bodega con lote `'SIN LOTE'`. Ticket GLPI 2621. |
 | [SB1_VIEW_REVISION_STOCK_V2.sql](SB1_VIEW_REVISION_STOCK_V2.sql) | `SB1_VIEW_REVISION_STOCK_V2` | Revisión de stock. |
-| [SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql](SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql) | `SB1_VIEW_REVISION_STOCK_V2` | **Segunda definición del mismo objeto** (la que describe la base). OC pendientes = abiertas **o** carpeta importación no liquidada; columna `Status_Importacion`. Regla: [revision-stock-oc-pendientes.md](../../domain/revision-stock-oc-pendientes.md). |
+| [SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql](SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql) | `SB1_VIEW_REVISION_STOCK_V2` | **Define la vista viva** (ALTER ejecutado 2026-11-24). OC pendientes = abiertas **o** carpeta importación no liquidada; `Status_Importacion`. Regla: [revision-stock-oc-pendientes.md](../../domain/revision-stock-oc-pendientes.md). |
 | [SB1_VIEW_UBICACIONES_UPC.sql](SB1_VIEW_UBICACIONES_UPC.sql) | `SB1_VIEW_UBICACIONES_UPC` | Ubicaciones y UPC por artículo y bodega. |
 | [SB1_VIEW_REPORTE_ENTRADA_MERCANCIAS_OT.sql](SB1_VIEW_REPORTE_ENTRADA_MERCANCIAS_OT.sql) | `SB1_VIEW_REPORTE_ENTRADA_MERCANCIAS_OT` | Entradas de mercancía por orden de trabajo, con año/mes/día separados. |
 | [datos-maestros-articulos.sql](datos-maestros-articulos.sql) | — | Artículos activos con grupo, unidad de medida, y fecha y usuario de creación y actualización. Pedido de Diego Morales, 2026-11-06. |
@@ -15,12 +15,12 @@ Todo sobre SAP B1 en HANA, esquema `EMPAQPLAST_PROD`.
 
 ## Dos archivos para `SB1_VIEW_REVISION_STOCK_V2`: cuál describe la base
 
-Son dos versiones de la misma consulta, guardadas en momentos distintos. Ambas
-declaran las mismas 53 columnas en el mismo orden; lo que las separa es el ajuste
-fijo `- 74250` escrito a mano solo para `MPPASO00001`.
+Son dos versiones de la misma consulta. La viva es `…-version-alterna.sql`
+(ALTER 2026-11-24: OC pendientes + `Status_Importacion`). Además del ajuste
+fijo `- 74250` en `MPPASO00001`, esa versión ya no coincide en número de
+columnas con `SB1_VIEW_REVISION_STOCK_V2.sql`.
 
-Comprobado contra la base el 2026-11-19: **la vista que corre todavía resta ese
-ajuste**, así que la que la describe es `…-version-alterna.sql`.
+Comprobado 2026-11-19 (tránsito) y 2026-11-24 (columnas OC / status).
 
 ```
 OITW · MPPASO00001 · UIO_IMPT   OnHand 0 + OnOrder 767.250 = 767.250

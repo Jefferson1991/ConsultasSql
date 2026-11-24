@@ -3,6 +3,13 @@
 Regla para `SB1_VIEW_REVISION_STOCK_V2` (columnas de pedido / cantidad).
 Declarada por Jefferson el **2026-11-24**.
 
+**Despliegue:** `ALTER VIEW` ejecutado en HANA prod el **2026-11-24** (Jefferson).
+Archivo que describe la base: `docs/consultas/inventario/SB1_VIEW_REVISION_STOCK_V2-version-alterna.sql`.
+Comprobado vía MCP `user-hana-sap-b1-produccion`: columnas
+`Cant_Ultimo_Pedido`, `Status_Importacion`, `Cant_OC_Abierta`,
+`Fecha_Ultima_OC_Abierta`, `Nro_Ultima_OC_Abierta` presentes; PET Botellón
+muestra OC `200001716` / `En tránsito` / 138.000 kg.
+
 ## Criterio
 
 Una línea de OC cuenta como pendiente si `CANCELED = 'N'` y:
