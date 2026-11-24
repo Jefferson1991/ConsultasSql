@@ -43,10 +43,13 @@ Análisis realizado contra HANA (esquema `EMPAQPLAST_PROD`).
 | `AREA` | Área de producción (ej. UIO-SOP_CONV) |
 | `FECHA_INICIO` | Para año/mes y ordenamiento |
 | `NO_CAVIDADE_ESTANDAR` | Cavidades estándar (MAX en GROUP BY) |
-| `CAVIDADES_HABILES_1` | Cavidades hábiles (MAX/MIN) |
+| `CAVIDADES_HABILES_1` | Cavidades hábiles (MAX/MIN) — UDF de la OF; **no** usar para ItemHora cuando hay 2+ moldes |
+| `TOTAL_CAVIDADES_ESTANDAR` | Suma de `UDF3` de todos los `MOL%` de la OT → fuente correcta para ItemHora |
 | `CICLO_MOLDE` | Ciclo estándar del molde (MAX) |
 
 **Filtro en la vista:** `MOLDE_CODIGO IN ('MOLINY0867','MOLINY1086','MOLINY1102','MOLINY1233','MOLINY1245','MOLINY1426')` → 96 órdenes para esos 6 moldes.
+
+**ItemHora / multi-molde (2026-11-24, Jefferson; pedido Mario Loachamín OT 9054):** fórmula `(3600 * cavidades) / ciclo`. Las cavidades son la **suma** de todos los moldes de la OT (`TOTAL_CAVIDADES_ESTANDAR`), no `CAVIDADES_HABILES_1`. En EFicienciaO: `Fact_Ordenes_Beas[ItemHora]` y `ItemHoraCicloPromedio`. Plan: `docs/plans/2026-11-24-itemhora-cavidades-multi-molde.md`. `MOLDE_CODIGO` sigue mostrando solo el primer molde (`RN=1`); listar el segundo queda pendiente.
 
 ---
 

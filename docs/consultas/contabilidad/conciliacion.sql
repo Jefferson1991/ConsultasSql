@@ -48,8 +48,9 @@ WITH Tabla_Libro AS (
             T0."Account" AS "N_CuentaL",
             T0."OrgAccName" AS "Nombre_CuentaL",
             CASE
-	-- 1. Evaluamos Anulados primero
-	WHEN T1."Canceled" = 'Y' OR T2."Canceled" = 'Y' OR T3."Canceled" = 'Y' THEN 'Anulado'
+	-- 1. Anulado: el original trae Canceled = 'Y'.
+	--    El reverso del depósito nace con Canceled = 'N' y otro DeposNum; el enlace es CnclDps.
+	WHEN T1."Canceled" = 'Y' OR T2."Canceled" = 'Y' OR T3."Canceled" = 'Y' OR T3."CnclDps" > 0 THEN 'Anulado'
 	 -- 2. Evaluamos los TransType 30 ESPECÍFICOS
 	WHEN T0."TransType" = 30 AND (T0."ContraAct" IN ('73010201','73010101') OR T0."TransCode" IN ('COBN','CCHD')) THEN 'Comision'
 	 WHEN T0."TransType" = 30 AND T0."TransCode" = 'TREC' AND (T0."Debit" <> 0) THEN 'Traslado de Credito'
@@ -70,9 +71,9 @@ WITH Tabla_Libro AS (
             T0."ExtrMatch" AS "N_ReconciliacionL",
             T0."Ref3Line" AS "N_ReferenciaL",
             CASE
-	-- 1. Anulados (Mantenemos tu lógica intacta para reversos)
-	WHEN T0."Credit" <> 0 AND (T1."Canceled" = 'Y' OR T3."Canceled" = 'Y') THEN -T0."Credit"
-	WHEN T0."Debit" <> 0 AND T2."Canceled" = 'Y' THEN T0."Debit"
+	-- 1. Anulados. CnclDps > 0 es el reverso del depósito, que no trae Canceled = 'Y'.
+	WHEN T0."Credit" <> 0 AND (T1."Canceled" = 'Y' OR T3."Canceled" = 'Y' OR T3."CnclDps" > 0) THEN -T0."Credit"
+	WHEN T0."Debit" <> 0 AND (T2."Canceled" = 'Y' OR T3."CnclDps" > 0) THEN T0."Debit"
 	-- 2. Comisiones (Cuenta 7301... o Código COBN)
 	WHEN T0."TransType" = 30 AND T0."ContraAct" IN ('73010201', '73010101') THEN COALESCE(NULLIF(T0."Debit", 0), -T0."Credit")
 	WHEN T0."TransType" = 30 AND T0."TransCode" = 'COBN' THEN COALESCE(NULLIF(T0."Debit", 0), -T0."Credit")
